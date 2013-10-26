@@ -1,0 +1,27 @@
+{
+    "name": "lastzero/sympathy",
+    "type": "library",
+    "description": "Sympathy Components for Silex / Symfony",
+    "keywords": ["css","assetic","database","db","dao","model","symfony","silex"],
+    "homepage": "https://github.com/lastzero/sympathy",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Michael Mayer",
+            "email": "michael@liquidbytes.net",
+            "homepage": "http://www.liquidbytes.net/",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": ">=5.4",
+        "doctrine/dbal": "~2.3",
+        "lastzero/test-tools": ">=0.6"
+    },
+    "require-dev": {
+        "kriswallsmith/assetic": "~1.1"
+    },
+    "autoload": {
+        "psr-0": { "Sympathy": "src/" }
+    }
+}

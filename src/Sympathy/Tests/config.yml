@@ -1,0 +1,13 @@
+parameters:
+    dbal.params:
+        driver:         mysqli
+        host:           localhost
+        port:           3306
+        dbname:         sympathy
+        charset:        utf8
+        user:           sympathy
+        password:       sympathy
+
+services:
+    assetic.css_optimize_filter:
+        class: Sympathy\Assetic\Filter\CssOptimizeFilter
