@@ -1,5 +1,5 @@
-Sympathy Components for Silex / Symfony
-=======================================
+Components for Silex / Symfony
+==============================
 
 [![Build Status](https://travis-ci.org/lastzero/test-tools.png?branch=master)](https://travis-ci.org/lastzero/sympathy)
 

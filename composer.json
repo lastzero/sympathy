@@ -1,7 +1,7 @@
 {
     "name": "lastzero/sympathy",
     "type": "library",
-    "description": "Sympathy Components for Silex / Symfony",
+    "description": "Components for Silex / Symfony",
     "keywords": ["css","assetic","database","db","dao","model","symfony","silex"],
     "homepage": "https://github.com/lastzero/sympathy",
     "license": "MIT",
