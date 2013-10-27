@@ -22,12 +22,44 @@ class OptimizerTest extends UnitTestCase
         $this->optimizer = new Optimizer;
     }
 
+    public function testGetCounts()
+    {
+        $expected = array (
+            'skipped' => 0,
+            'merged' => 2,
+            'properties' => 9,
+            'selectors' => 5,
+            'nested' => 1,
+            'unoptimized' => 1,
+        );
+
+        $inputCss = '@font { foo: bar; }body { foo:bar; too: me;} body { baz:foo; } body { foo: new }
+        div.test { border: 1px solid black; }
+        div.other { border: 1px solid black}
+        font { { face: 123; } }';
+
+        $this->optimizer->optimizeCss($inputCss);
+
+        $result = $this->optimizer->getCounts();
+        $this->assertEquals($expected, $result);
+    }
+
     /**
-     * @expectedException \LogicException
+     * @expectedException \Sympathy\Css\Exception
      */
     public function testGetCountsException()
     {
         $this->optimizer->getCounts();
+    }
+
+    /**
+     * @expectedException \Sympathy\Css\Exception
+     * @expectedExceptionMessage Input CSS must not contain comments
+     */
+    public function testOptimizeCssCommentException() {
+        $inputCss = 'body { foo:bar; too: me;} /* comment */ body { baz:foo; } body { foo: new }';
+
+        $this->optimizer->optimizeCss($inputCss);
     }
 
     public function testOptimizeCss() {

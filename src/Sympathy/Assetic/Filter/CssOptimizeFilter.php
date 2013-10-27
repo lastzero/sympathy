@@ -7,9 +7,10 @@ use Assetic\Filter\BaseCssFilter;
 use Sympathy\Css\Optimizer;
 
 /**
- * This Assetic filter optimizes your CSS by removing duplicates
+ * This Assetic filter optimizes your CSS by removing duplicates and combining selectors
  *
- * It currently only works with well formed CSS without inline comments (might require a pre-filter)
+ * Since the parsing is done using simple (and fast) string functions, it requires well
+ * formed CSS without inline comments. Please use a pre-filter like CssMinFilter.
  *
  * Usage:
  *

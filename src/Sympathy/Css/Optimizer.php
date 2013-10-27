@@ -7,6 +7,10 @@ use \CssMin;
 /**
  * This filter optimizes your CSS by removing duplicates and combining selectors
  *
+ * Since the parsing is done using simple (and fast) string functions, it requires well
+ * formed CSS without inline comments. Please use a pre-filter like CssMin (minifyCss() is a wrapper)
+ * or any other CSS minifier.
+ *
  * Usage:
  *
  * $optimizer = new \Sympathy\Css\Optimizer;
@@ -30,12 +34,12 @@ class Optimizer
      * Returns information about the CSS optimization
      *
      * @return array
-     * @throws \LogicException
+     * @throws Exception
      */
     public function getCounts()
     {
-        if(!$this->counts) {
-            throw new \LogicException ('Counts are available after calling optimizeCss()');
+        if (!$this->counts) {
+            throw new Exception ('Counts are available after calling optimizeCss()');
         }
 
         return $this->counts;
@@ -65,10 +69,15 @@ class Optimizer
      * $optimizedCss = $optimizer->optimizeCss($optimizer->minifyCss($originalCss));
      *
      * @param string $originalCSS
+     * @throws Exception
      * @return string
      */
     public function optimizeCss($originalCSS)
     {
+        if (strpos($originalCSS, '/*') !== false) {
+            throw new Exception ('Input CSS must not contain comments');
+        }
+
         $counts = array(
             'skipped' => 0,
             'merged' => 0,
@@ -88,19 +97,19 @@ class Optimizer
 
         $blocks = explode('}', $originalCSS);
 
-        for($blockNumber = 0; $blockNumber < count($blocks); $blockNumber++) {
+        for ($blockNumber = 0; $blockNumber < count($blocks); $blockNumber++) {
             $block = trim($blocks[$blockNumber]);
             $parts = explode('{', $block);
 
-            if($block == '') {
+            if ($block == '') {
                 // Nothing to do
                 continue;
             }
 
-            if(count($parts) != 2) {
+            if (count($parts) != 2) {
                 $nested = $block;
 
-                while($blockNumber < count($blocks) && trim($blocks[$blockNumber]) != '') {
+                while ($blockNumber < count($blocks) && trim($blocks[$blockNumber]) != '') {
                     $blockNumber++;
                     $nested .= '}' . trim($blocks[$blockNumber]);
                 }
@@ -111,7 +120,7 @@ class Optimizer
                 continue;
             }
 
-            if(strpos($block, '@') === 0) {
+            if (strpos($block, '@') === 0) {
                 $untouchedBlocks[] = $block . '}';
                 $counts['unoptimized']++;
                 continue;
@@ -120,7 +129,7 @@ class Optimizer
             $selectors = explode(',', $parts[0]);
             $properties = explode(';', $parts[1]);
 
-            if(count($properties) == 0) {
+            if (count($properties) == 0) {
                 // Nothing to do
                 $counts['skipped']++;
                 continue;
@@ -130,21 +139,21 @@ class Optimizer
             $propertyName = '';
             $validProperty = false;
 
-            foreach($properties as $property) {
+            foreach ($properties as $property) {
                 $property = trim($property);
                 $strpos = strpos($property, ':');
                 $hasPropertyName = ($strpos !== false);
 
-                if($hasPropertyName) {
+                if ($hasPropertyName) {
                     $propertyName = trim(substr($property, 0, $strpos));
                     $propertyValue = trim(substr($property, $strpos + 1));
                     $validProperty = !isset($propertyBlacklist[$propertyName]) || $propertyBlacklist[$propertyName] != $propertyValue;
                 }
 
-                if($validProperty && $propertyName) {
-                    if($hasPropertyName) {
+                if ($validProperty && $propertyName) {
+                    if ($hasPropertyName) {
                         $newProperties[$propertyName] = $propertyName . ':' . $propertyValue;
-                    } elseif($property != '') {
+                    } elseif ($property != '') {
                         // Base64 image data
                         $newProperties[$propertyName] .= ';' . $property;
                     }
@@ -153,11 +162,11 @@ class Optimizer
                 $counts['properties']++;
             }
 
-            foreach($selectors as $selector) {
+            foreach ($selectors as $selector) {
                 $selector = trim($selector);
                 $counts['selectors']++;
 
-                if(isset($allSelectors[$selector])) {
+                if (isset($allSelectors[$selector])) {
                     $mergedProperties = array_merge($allSelectors[$selector], $newProperties);
                     $counts['merged']++;
                 } else {
@@ -170,17 +179,17 @@ class Optimizer
             }
         }
 
-        foreach($allSelectors as $selector => $properties) {
+        foreach ($allSelectors as $selector => $properties) {
             $hash = md5(print_r($properties, true));
 
-            if(!isset($propertyHashes[$hash])) {
+            if (!isset($propertyHashes[$hash])) {
                 $propertyHashes[$hash] = array();
             }
 
             $propertyHashes[$hash][] = $selector;
         }
 
-        foreach($propertyHashes as $selectors) {
+        foreach ($propertyHashes as $selectors) {
             sort($selectors);
             $mainSelector = $selectors[0];
             $propertiesString = implode(';', $allSelectors[$mainSelector]);
@@ -188,12 +197,12 @@ class Optimizer
             $optimizedRules[$selectorsString] = $propertiesString;
         }
 
-        foreach($untouchedBlocks as $untouchedBlock) {
+        foreach ($untouchedBlocks as $untouchedBlock) {
             $optimizedCSS .= $untouchedBlock;
         }
 
-        foreach($optimizedRules as $selectorsString => $propertiesString) {
-            $optimizedCSS .= $selectorsString . '{' . $propertiesString .'}';
+        foreach ($optimizedRules as $selectorsString => $propertiesString) {
+            $optimizedCSS .= $selectorsString . '{' . $propertiesString . '}';
         }
 
         $this->counts = $counts;
