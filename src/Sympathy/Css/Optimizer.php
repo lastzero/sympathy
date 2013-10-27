@@ -2,16 +2,17 @@
 
 namespace Sympathy\Css;
 
+use \CssMin;
+
 /**
- * This filter optimizes your CSS by removing duplicates
+ * This filter optimizes your CSS by removing duplicates and combining selectors
  *
  * Usage:
  *
  * $optimizer = new \Sympathy\Css\Optimizer;
- *
  * $inputCss = 'body { foo:bar; } body { baz:foo; } body { foo: new }';
- *
- * $outputCss = $optimizer->optimizeCss($inputCss);
+ * $minifiedCss = $optimizer->minifyCss($inputCss);
+ * $optimizedCss = $optimizer->optimizeCss($minifiedCss);
  *
  * @author Michael Mayer <michael@liquidbytes.net>
  * @package Sympathy
@@ -41,7 +42,27 @@ class Optimizer
     }
 
     /**
-     * Returns optimized CSS code
+     * Returns minified CSS
+     *
+     * CssMin is a css parser and minfier. It minifies css by removing unneeded whitespace
+     * character, comments, empty blocks and empty declarations. The result can be further
+     * compressed by optimizeCss().
+     *
+     * @param $originalCSS
+     * @return string
+     */
+    public function minifyCss($originalCSS)
+    {
+        return CssMin::minify($originalCSS);
+    }
+
+    /**
+     * Returns optimized CSS code by removing duplicates and combining selectors
+     *
+     * If your CSS code contains comments, you must remove them with minifyCss() first:
+     *
+     * $optimizer = new \Sympathy\Css\Optimizer;
+     * $optimizedCss = $optimizer->optimizeCss($optimizer->minifyCss($originalCss));
      *
      * @param string $originalCSS
      * @return string

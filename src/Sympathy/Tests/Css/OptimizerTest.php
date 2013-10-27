@@ -41,4 +41,28 @@ class OptimizerTest extends UnitTestCase
 
         $this->assertEquals($expected, $result);
     }
+
+    public function testMinifyCss() {
+        $expected = 'body{foo:bar;too:me}body{baz:foo}body{foo:new}div.test{border:1px solid black}div.other{border:1px solid black}';
+
+        $inputCss = 'body { foo:bar; too: me;} body { baz:foo; } body { foo: new }
+        div.test { border: 1px solid black; }
+        div.other { border: 1px solid black} ';
+
+        $result = $this->optimizer->minifyCss($inputCss);
+
+        $this->assertEquals($expected, $result);
+    }
+
+    public function testMinifyAndOptimizeCss() {
+        $expected = 'body{baz:foo;foo:new;too:me}div.other,div.test{border:1px solid black}';
+
+        $inputCss = 'body { foo:bar; too: me;} /* Foo Bar Test */ body { baz:foo; } body { foo: new }
+        div.test { border: 1px solid black; }
+        div.other { border: 1px solid black} ';
+
+        $result = $this->optimizer->optimizeCss($this->optimizer->minifyCss($inputCss));
+
+        $this->assertEquals($expected, $result);
+    }
 }

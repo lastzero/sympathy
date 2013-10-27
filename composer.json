@@ -16,7 +16,8 @@
     "require": {
         "php": ">=5.4",
         "doctrine/dbal": "~2.3",
-        "lastzero/test-tools": ">=0.6"
+        "lastzero/test-tools": ">=0.6",
+        "natxet/CssMin": "dev-master"
     },
     "require-dev": {
         "kriswallsmith/assetic": "~1.1"
