@@ -16,7 +16,9 @@
     "require": {
         "php": ">=5.4",
         "doctrine/dbal": "~2.3",
-        "lastzero/test-tools": ">=0.6",
+        "symfony/translation": "~2.3",
+        "symfony/validator": "~2.3",
+        "lastzero/test-tools": "dev-master",
         "natxet/CssMin": "dev-master"
     },
     "require-dev": {

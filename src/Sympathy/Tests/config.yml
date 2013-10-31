@@ -9,5 +9,30 @@ parameters:
         password:       sympathy
 
 services:
+    message_selector:
+        class: \Symfony\Component\Translation\MessageSelector
+
+    yaml_loader:
+        class: \Symfony\Component\Translation\Loader\YamlFileLoader
+
+    array_loader:
+        class: \Symfony\Component\Translation\Loader\ArrayLoader
+
+    translator:
+        class: \Symfony\Component\Translation\Translator
+        arguments: ['de', @message_selector]
+        calls:
+          - [addLoader, ['yaml', @yaml_loader]]
+          - [addLoader, ['array', @array_loader]]
+          - [addResource, ['yaml', '%base.path%/Form/Localization/de.yml', 'de']]
+          - [addResource, ['yaml', '%base.path%/Form/Localization/en.yml', 'en']]
+
+    validator:
+        class: \Sympathy\Form\Validator
+
+    form:
+        class: \Sympathy\Form\Form
+        arguments: [@translator, @validator]
+
     assetic.css_optimize_filter:
-        class: Sympathy\Assetic\Filter\CssOptimizeFilter
+        class: \Sympathy\Assetic\Filter\CssOptimizeFilter
