@@ -51,11 +51,10 @@ class Validator
      * @param string $key Field key
      * @param string $token Text token
      * @param array $params Text replacements
-     * @return $this
      */
     protected function addError($key, $token, array $params = array())
     {
-        return $this->getForm()->addError($key, $token, $params);
+        $this->getForm()->addError($key, $token, $params);
     }
 
     /**

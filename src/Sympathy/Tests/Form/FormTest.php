@@ -10,14 +10,17 @@ use Sympathy\Form\Form;
  * @package Sympathy
  * @license MIT
  */
-class FormTest extends UnitTestCase {
+class FormTest extends UnitTestCase
+{
     protected $form;
 
-    public function setUp () {
+    public function setUp()
+    {
         $this->form = $this->get('form');
     }
 
-    public function testSetLocale () {
+    public function testSetLocale()
+    {
         $this->form->setLocale('de');
 
         $result = $this->form->getLocale();
@@ -25,12 +28,14 @@ class FormTest extends UnitTestCase {
         $this->assertEquals('de', $result);
     }
 
-    public function testGetForm () {
+    public function testGetForm()
+    {
         $result = $this->form->getForm();
         $this->assertEquals(array(), $result);
     }
 
-    public function testSetAllValues () {
+    public function testSetAllValues()
+    {
         $this->setExpectedException('\Sympathy\Form\Exception');
         $values = array('foo' => 'bar', 'x' => 'y');
         $this->form->setAllValues($values);
@@ -38,23 +43,24 @@ class FormTest extends UnitTestCase {
         $this->assertEquals($values, $result);
     }
 
-    public function testSetWritableValues () {
+    public function testSetWritableValues()
+    {
         $this->form->setDefinition(
             array(
                 'firstname' => array(
                     'readonly' => true
-                 ),
-                 'lastname' => array(
+                ),
+                'lastname' => array(
                     'readonly' => false
-                 ),
-                 'company' => array(
+                ),
+                'company' => array(
                     'type' => 'string'
-                 ),
-                 'foo.bar' => array(
+                ),
+                'foo.bar' => array(
                     'default' => 'foo',
                     'type' => 'string'
-                 )
-             )
+                )
+            )
         );
 
         $values = array('firstname' => 'foo', 'lastname' => 'bar', 'company' => 'xyz');
@@ -69,32 +75,33 @@ class FormTest extends UnitTestCase {
         $this->assertEquals('foo', $result['foo.bar']);
     }
 
-    public function testSetWritableValuesOnPageSuccess () {
+    public function testSetWritableValuesOnPageSuccess()
+    {
         $this->form->setDefinition(
             array(
                 'firstname' => array(
                     'readonly' => true,
                     'page' => 1
-                 ),
-                 'lastname' => array(
+                ),
+                'lastname' => array(
                     'readonly' => false,
                     'page' => 2
-                 ),
-                 'company' => array(
+                ),
+                'company' => array(
                     'type' => 'string',
                     'page' => 2
-                 ),
-                 'mustsee' => array(
+                ),
+                'mustsee' => array(
                     'type' => 'bool',
                     'checkbox' => true,
                     'page' => 2
-                 ),
-                 'bar' => array(
+                ),
+                'bar' => array(
                     'default' => 'foo',
                     'type' => 'string',
                     'page' => 3
-                 )
-             )
+                )
+            )
         );
 
         $values = array('lastname' => 'foo', 'company' => 'bar');
@@ -110,33 +117,34 @@ class FormTest extends UnitTestCase {
         $this->assertEquals(false, $result['mustsee']);
     }
 
-    public function testGetErrorsOnPage () {
+    public function testGetErrorsOnPage()
+    {
         $this->form->setDefinition(
             array(
                 'firstname' => array(
                     'readonly' => true,
                     'page' => 1
-                 ),
-                 'lastname' => array(
+                ),
+                'lastname' => array(
                     'readonly' => false,
                     'page' => 2
-                 ),
-                 'company' => array(
+                ),
+                'company' => array(
                     'type' => 'string',
                     'page' => 2
-                 ),
-                 'mustsee' => array(
+                ),
+                'mustsee' => array(
                     'type' => 'bool',
                     'checkbox' => true,
-                    'page' => 2,                    
+                    'page' => 2,
                     'required' => true
-                 ),
-                 'bar' => array(
+                ),
+                'bar' => array(
                     'type' => 'string',
                     'page' => 3,
                     'depends' => 'company'
-                 )
-             )
+                )
+            )
         );
 
         $values = array('lastname' => 'foo', 'company' => 'bar', 'mustsee' => true);
@@ -152,7 +160,8 @@ class FormTest extends UnitTestCase {
         $this->assertEquals(1, count($errors[3]['bar']));
     }
 
-    public function testSetWritableValuesOnPageError () {
+    public function testSetWritableValuesOnPageError()
+    {
         $this->setExpectedException('\Sympathy\Form\Exception');
 
         $this->form->setDefinition(
@@ -160,21 +169,21 @@ class FormTest extends UnitTestCase {
                 'firstname' => array(
                     'readonly' => true,
                     'page' => 1
-                 ),
-                 'lastname' => array(
+                ),
+                'lastname' => array(
                     'readonly' => false,
                     'page' => 2
-                 ),
-                 'company' => array(
+                ),
+                'company' => array(
                     'type' => 'string',
                     'page' => 2
-                 ),
-                 'bar' => array(
+                ),
+                'bar' => array(
                     'default' => 'foo',
                     'type' => 'string',
                     'page' => 3
-                 )
-             )
+                )
+            )
         );
 
         $values = array('lastname' => 'foo');
@@ -182,7 +191,8 @@ class FormTest extends UnitTestCase {
         $this->form->setWritableValuesOnPage($values, 2);
     }
 
-    public function testValidationError () {
+    public function testValidationError()
+    {
         $this->form->setDefinition(
             array(
                 'firstname' => array(
@@ -190,17 +200,17 @@ class FormTest extends UnitTestCase {
                     'min' => 2,
                     'max' => 10,
                     'caption' => 'Vorname'
-                 ),
-                 'temperature' => array(
+                ),
+                'temperature' => array(
                     'type' => 'numeric',
                     'min' => 29.9,
                     'max' => 50.1,
                     'caption' => 'Temperatur'
-                 ),
-                 'email' => array(
+                ),
+                'email' => array(
                     'type' => 'email'
-                 ),
-                 'cars' => array(
+                ),
+                'cars' => array(
                     'caption' => 'Autos',
                     'type' => 'list',
                     'options' => array(
@@ -210,8 +220,8 @@ class FormTest extends UnitTestCase {
                     ),
                     'min' => 1,
                     'max' => 2
-                 ),
-                 'computers' => array(
+                ),
+                'computers' => array(
                     'caption' => 'Computer',
                     'type' => 'list',
                     'options' => array(
@@ -219,8 +229,8 @@ class FormTest extends UnitTestCase {
                         'hp' => 'HP',
                         'apple' => 'Apple'
                     )
-                 ),
-                 'sports' => array(
+                ),
+                'sports' => array(
                     'caption' => 'Sport',
                     'type' => 'list',
                     'options' => array(
@@ -228,17 +238,17 @@ class FormTest extends UnitTestCase {
                         'chess' => 'Schach',
                         'dance' => 'Tanzen'
                     )
-                 ),
-                 'bar' => array(
+                ),
+                'bar' => array(
                     'default' => 'foo',
                     'type' => 'string',
                     'required' => true
-                 ),
-                 'spacetravel' => array(
+                ),
+                'spacetravel' => array(
                     'depends' => 'sports',
                     'depends_value' => 'running'
-                 )
-             )
+                )
+            )
         );
 
         $values = array(
@@ -266,7 +276,8 @@ class FormTest extends UnitTestCase {
         $this->assertEquals(8, count($errors));
     }
 
-    public function testValidationSuccess () {
+    public function testValidationSuccess()
+    {
         $this->form->setDefinition(
             array(
                 'firstname' => array(
@@ -274,17 +285,17 @@ class FormTest extends UnitTestCase {
                     'min' => 2,
                     'max' => 10,
                     'caption' => 'Vorname'
-                 ),
-                 'temperature' => array(
+                ),
+                'temperature' => array(
                     'type' => 'numeric',
                     'min' => 29.9,
                     'max' => 50.1,
                     'caption' => 'Temperatur'
-                 ),
-                 'email' => array(
+                ),
+                'email' => array(
                     'type' => 'email'
-                 ),
-                 'cars' => array(
+                ),
+                'cars' => array(
                     'type' => 'list',
                     'options' => array(
                         'bmw' => 'BMW',
@@ -293,16 +304,16 @@ class FormTest extends UnitTestCase {
                     ),
                     'min' => 1,
                     'max' => 2
-                 ),
-                 'computers' => array(
+                ),
+                'computers' => array(
                     'type' => 'list',
                     'options' => array(
                         'len' => 'Lenovo',
                         'hp' => 'HP',
                         'apple' => 'Apple'
                     )
-                 ),
-                 'nothing' => array(
+                ),
+                'nothing' => array(
                     'type' => 'list',
                     'checkbox' => true,
                     'options' => array(
@@ -310,41 +321,41 @@ class FormTest extends UnitTestCase {
                         'hp' => 'HP',
                         'apple' => 'Apple'
                     )
-                 ),
-                 'sports' => array(
+                ),
+                'sports' => array(
                     'caption' => 'Sport',
                     'options' => array(
                         'soccer' => 'Fussball',
                         'chess' => 'Schach',
                         'dance' => 'Tanzen'
                     )
-                 ),
-                 'fun' => array(
+                ),
+                'fun' => array(
                     'default' => 'for_me'
-                 ),
-                 'spacetravel' => array(
+                ),
+                'spacetravel' => array(
                     'depends' => 'sports',
                     'depends_value' => 'chess'
-                 ),
-                 'drink' => array(
+                ),
+                'drink' => array(
                     'caption' => 'Trinken',
                     'depends' => 'sports',
                     'depends_last_option' => true
-                 ),
-                 'vehicle' => array(
+                ),
+                'vehicle' => array(
                     'caption' => 'Fahrzeug',
                     'type' => 'float'
-                 ),
-                 'drive' => array(
+                ),
+                'drive' => array(
                     'depends' => 'vehicle',
                     'depends_value_empty' => true
-                 ),
-                 'between' => array(
+                ),
+                'between' => array(
                     'type' => 'int',
                     'min' => 1,
                     'max' => 10
-                 )
-             )
+                )
+            )
         );
 
         $values = array(
@@ -376,7 +387,8 @@ class FormTest extends UnitTestCase {
         $this->assertEquals(0, count($errors));
     }
 
-    public function testDefinedWritableValuesSuccess () {
+    public function testDefinedWritableValuesSuccess()
+    {
         $this->form->setDefinition(
             array(
                 'firstname' => array(
@@ -384,17 +396,17 @@ class FormTest extends UnitTestCase {
                     'min' => 2,
                     'max' => 10,
                     'caption' => 'Vorname'
-                 ),
-                 'temperature' => array(
+                ),
+                'temperature' => array(
                     'type' => 'numeric',
                     'min' => 29.9,
                     'max' => 50.1,
                     'caption' => 'Temperatur'
-                 ),
-                 'email' => array(
+                ),
+                'email' => array(
                     'type' => 'email'
-                 ),
-                 'cars' => array(
+                ),
+                'cars' => array(
                     'type' => 'list',
                     'options' => array(
                         'bmw' => 'BMW',
@@ -403,8 +415,8 @@ class FormTest extends UnitTestCase {
                     ),
                     'min' => 1,
                     'max' => 2
-                 ),
-                 'computers' => array(
+                ),
+                'computers' => array(
                     'type' => 'list',
                     'checkbox' => true,
                     'options' => array(
@@ -412,8 +424,8 @@ class FormTest extends UnitTestCase {
                         'hp' => 'HP',
                         'apple' => 'Apple'
                     )
-                 ),
-                 'more_computers' => array(
+                ),
+                'more_computers' => array(
                     'type' => 'list',
                     'checkbox' => true,
                     'options' => array(
@@ -422,8 +434,8 @@ class FormTest extends UnitTestCase {
                         2 => 'Apple'
                     ),
                     'min' => 2
-                 ),
-                 'nothing' => array(
+                ),
+                'nothing' => array(
                     'type' => 'list',
                     'checkbox' => true,
                     'options' => array(
@@ -431,34 +443,34 @@ class FormTest extends UnitTestCase {
                         'hp' => 'HP',
                         'apple' => 'Apple'
                     )
-                 ),
-                 'sports' => array(
+                ),
+                'sports' => array(
                     'caption' => 'Sport',
                     'options' => array(
                         'soccer' => 'Fussball',
                         'chess' => 'Schach',
                         'dance' => 'Tanzen'
                     )
-                 ),
-                 'spacetravel' => array(
+                ),
+                'spacetravel' => array(
                     'depends' => 'sports',
                     'depends_value' => 'chess'
-                 ),
-                 'drink' => array(
+                ),
+                'drink' => array(
                     'caption' => 'Trinken',
                     'depends' => 'sports',
                     'depends_last_option' => true
-                 ),
-                 'vehicle' => array(
+                ),
+                'vehicle' => array(
                     'caption' => 'Fahrzeug',
                     'type' => 'float'
-                 ),
-                 'between' => array(
+                ),
+                'between' => array(
                     'type' => 'int',
                     'min' => 1,
                     'max' => 10
-                 )
-             )
+                )
+            )
         );
 
         $values = array(
@@ -525,12 +537,14 @@ class FormTest extends UnitTestCase {
         $this->assertEquals(0, count($errors));
     }
 
-    public function testChangeDefinitionException () {
+    public function testChangeDefinitionException()
+    {
         $this->setExpectedException('\Sympathy\Form\Exception');
         $this->form->changeDefinition('foo', array('min' => 3));
     }
 
-    public function testChangeDefinition () {
+    public function testChangeDefinition()
+    {
 
         $this->form->addDefinition('foo', array('min' => 3));
         $this->form->foo = 'abc';
@@ -552,29 +566,30 @@ class FormTest extends UnitTestCase {
         $this->form->clearErrors();
     }
 
-    public function testValidateMax () {
+    public function testValidateMax()
+    {
         $this->form->setDefinition(
             array(
                 'birthday' => array(
                     'type' => 'date',
                     'max' => 0
-                 ),
-                 'otherday' => array(
+                ),
+                'otherday' => array(
                     'type' => 'date',
                     'max' => '1981-01-22'
-                 ),
-                 'number' => array(
+                ),
+                'number' => array(
                     'type' => 'numeric',
                     'max' => 299
-                 ),
-                 'string' => array(
+                ),
+                'string' => array(
                     'type' => 'string',
                     'max' => 10
-                 )
-             )
+                )
+            )
         );
 
-        $values = array('birthday' => date('d.m.Y', time() + 60*60*24), 'otherday' => '22.01.1990', 'number' => 300, 'string' => 'abcdefghijk');
+        $values = array('birthday' => date('d.m.Y', time() + 60 * 60 * 24), 'otherday' => '22.01.1990', 'number' => 300, 'string' => 'abcdefghijk');
 
         $errors = $this->form->setWritableValues($values)->validate()->getErrors();
 
@@ -582,37 +597,38 @@ class FormTest extends UnitTestCase {
 
         $this->form->clearErrors();
 
-        $values = array('birthday' => date('d.m.Y', time() - 60*60*24), 'otherday' => '22.01.1960', 'number' => 299, 'string' => 'abc');
+        $values = array('birthday' => date('d.m.Y', time() - 60 * 60 * 24), 'otherday' => '22.01.1960', 'number' => 299, 'string' => 'abc');
 
         $errors = $this->form->setWritableValues($values)->validate()->getErrors();
 
         $this->assertEquals(0, count($errors));
     }
 
-    public function testValidateMin () {
+    public function testValidateMin()
+    {
         $this->form->setDefinition(
             array(
                 'birthday' => array(
                     'type' => 'date',
                     'min' => 0
-                 ),
-                 'otherday' => array(
+                ),
+                'otherday' => array(
                     'caption' => 'Other Day',
                     'type' => 'date',
                     'min' => '1981-01-22'
-                 ),
-                 'number' => array(
+                ),
+                'number' => array(
                     'type' => 'numeric',
                     'min' => 299
-                 ),
-                 'string' => array(
+                ),
+                'string' => array(
                     'type' => 'string',
                     'min' => 10
-                 )
-             )
+                )
+            )
         );
 
-        $values = array('birthday' => date('d.m.Y', time() - 60*60*24), 'otherday' => '22.01.1960', 'number' => 298, 'string' => 'abc');
+        $values = array('birthday' => date('d.m.Y', time() - 60 * 60 * 24), 'otherday' => '22.01.1960', 'number' => 298, 'string' => 'abc');
 
         $errors = $this->form->setWritableValues($values)->validate()->getErrors();
 
@@ -620,7 +636,7 @@ class FormTest extends UnitTestCase {
 
         $this->form->clearErrors();
 
-        $values = array('birthday' => date('d.m.Y', time() + 60*60*24), 'otherday' => '22.01.1990', 'number' => 299, 'string' => 'abcdefghijk');
+        $values = array('birthday' => date('d.m.Y', time() + 60 * 60 * 24), 'otherday' => '22.01.1990', 'number' => 299, 'string' => 'abcdefghijk');
 
         $errors = $this->form->setWritableValues($values)->validate()->getErrors();
 
