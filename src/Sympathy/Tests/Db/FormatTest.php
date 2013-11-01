@@ -12,6 +12,10 @@ use DateTime;
  * @license MIT
  */
 class FormatTest extends UnitTestCase {
+    public function setUp () {
+        date_default_timezone_set('UTC');
+    }
+
     public function testFromSqlDatetime () {
         $output = Format::fromSql(Format::DATETIME, '2010-10-11 17:08:21');
         $this->assertInstanceOf('\DateTime', $output);
@@ -101,17 +105,17 @@ class FormatTest extends UnitTestCase {
 
     public function testToSqlTimestampFromLocaleFormat() {
         $output = Format::toSql(Format::TIMESTAMP, '04.12.2012');
-        $this->assertEquals(1354575600, $output);
+        $this->assertEquals(1354579200, $output);
     }
 
     public function testToSqlTimestampFromDateTime() {
         $date = new DateTime('2012-12-04');
         $output = Format::toSql(Format::TIMESTAMP, $date);
-        $this->assertEquals(1354575600, $output);
+        $this->assertEquals(1354579200, $output);
 
         $date = new DateTime('04.12.2012');
         $output = Format::toSql(Format::TIMESTAMP, $date);
-        $this->assertEquals(1354575600, $output);
+        $this->assertEquals(1354579200, $output);
     }
 
     public function testToSqlDatetimeFromEmptyValue () {
@@ -158,22 +162,22 @@ class FormatTest extends UnitTestCase {
 
     public function testToSqlTimestamptimeFromLocaleFormat () {
         $output = Format::toSql(Format::TIMESTAMP, '04.12.2012 15:47');
-        $this->assertEquals(1354632420, $output);
+        $this->assertEquals(1354636020, $output);
     }
 
     public function testToSqlTimestamptimeFromDbFormat () {
         $output = Format::toSql(Format::TIMESTAMP, '2012-12-04 15:47');
-        $this->assertEquals(1354632420, $output);
+        $this->assertEquals(1354636020, $output);
     }
 
     public function testToSqlTimestamptimeFromDateTime () {
         $date = new DateTime('2012-12-04 15:47');
         $output = Format::toSql(Format::TIMESTAMP, $date);
-        $this->assertEquals(1354632420, $output);
+        $this->assertEquals(1354636020, $output);
 
         $date = new DateTime('04.12.2012 15:47');
         $output = Format::toSql(Format::TIMESTAMP, $date);
-        $this->assertEquals(1354632420, $output);
+        $this->assertEquals(1354636020, $output);
     }
 
     public function testFromSqlFloat () {
