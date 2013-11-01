@@ -2,6 +2,7 @@
 
 namespace Sympathy\Tests\Form;
 
+use Sympathy\Form\Options;
 use TestTools\TestCase\UnitTestCase;
 use Sympathy\Form\Form;
 
@@ -12,6 +13,9 @@ use Sympathy\Form\Form;
  */
 class FormTest extends UnitTestCase
 {
+    /**
+     * @var Form
+     */
     protected $form;
 
     public function setUp()
@@ -641,5 +645,36 @@ class FormTest extends UnitTestCase
         $errors = $this->form->setWritableValues($values)->validate()->getErrors();
 
         $this->assertEquals(0, count($errors));
+    }
+
+    public function testValidateOption()
+    {
+        $options = new Options($this->get('translator'));
+
+        $this->form->setOptions($options);
+
+        $this->form->setDefinition(
+            array(
+                'country' => array(
+                    'caption' => 'Country',
+                    'type' => 'string',
+                    'options' => $this->form->getOptions('countries')
+                )
+            )
+        );
+
+        $values = array('country' => 'DE');
+
+        $errors = $this->form->setWritableValues($values)->validate()->getErrors();
+
+        $this->assertEquals(0, count($errors));
+
+        $this->form->clearErrors();
+
+        $values = array('country' => 'XX');
+
+        $errors = $this->form->setWritableValues($values)->validate()->getErrors();
+
+        $this->assertEquals(1, count($errors));
     }
 }
