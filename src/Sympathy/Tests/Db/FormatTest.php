@@ -219,6 +219,15 @@ class FormatTest extends UnitTestCase {
         $output = Format::toSql(Format::FLOAT, '11.345');
         $this->assertEquals(11.345, $output);
 
+        $output = Format::toSql(Format::FLOAT, '11345.');
+        $this->assertEquals(11345, $output);
+
+        $output = Format::toSql(Format::FLOAT, '11.345.000,12');
+        $this->assertEquals(11345000.12, $output);
+
+        $output = Format::toSql(Format::FLOAT, '11,345,000.12');
+        $this->assertEquals(11345000.12, $output);
+
         $output = Format::toSql(Format::FLOAT, 11.345);
         $this->assertEquals(11.345, $output);
     }

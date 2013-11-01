@@ -45,7 +45,7 @@ class Format
             case self::BOOL:
                 return (bool)$data;
             case self::FLOAT:
-                return (double)$data;
+                return floatval($data);
             case self::STRING:
                 return (string)$data;
             case self::ALPHANUMERIC:
@@ -88,6 +88,14 @@ class Format
                 return (integer)$data;
             case self::BOOL:
                 return (integer)$data;
+            case self::FLOAT:
+                if (strpos($data, ',') > strpos($data, '.')) {
+                    $data = str_replace(array('.', ','), array('', '.'), $data);
+                } elseif(strpos($data, '.') > strpos($data, ',')) {
+                    $data = str_replace(',', '', $data);
+                }
+
+                return floatval($data);
             case self::STRING:
                 return (string)$data;
             case self::ALPHANUMERIC:
@@ -96,12 +104,6 @@ class Format
                 return serialize($data);
             case self::JSON:
                 return json_encode($data);
-            case self::FLOAT:
-                if (strpos($data, ',') !== false) {
-                    $data = str_replace(array('.', ','), array('', '.'), $data);
-                }
-
-                return (double)$data;
             default:
                 throw new FormatException ('Unknown format: ' . $format);
         }
