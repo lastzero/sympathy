@@ -32,9 +32,9 @@ class FormTest extends UnitTestCase
         $this->assertEquals('de', $result);
     }
 
-    public function testGetForm()
+    public function testGetAsArray()
     {
-        $result = $this->form->getForm();
+        $result = $this->form->getAsArray();
         $this->assertEquals(array(), $result);
     }
 
@@ -676,5 +676,44 @@ class FormTest extends UnitTestCase
         $errors = $this->form->setWritableValues($values)->validate()->getErrors();
 
         $this->assertEquals(1, count($errors));
+    }
+
+    public function testDateTime()
+    {
+        $this->form->setDefinition(
+            array(
+                'start' => array(
+                    'caption' => 'Date Time',
+                    'type' => 'datetime'
+                ),
+                'end' => array(
+                    'caption' => 'Date',
+                    'type' => 'date'
+                ),
+                'lap' => array(
+                    'caption' => 'Time',
+                    'type' => 'time'
+                ),
+                'object' => array(
+                    'caption' => 'Object',
+                    'type' => 'date'
+                )
+            )
+        );
+
+        $values = array(
+            'start' => '22.01.1981 12:34',
+            'end' => '22.01.1990',
+            'lap' => '15:12',
+            'object' => new \DateTime('2000-01-01')
+        );
+
+        $errors = $this->form->setWritableValues($values)->validate()->getErrors();
+
+        $this->assertEquals(0, count($errors));
+
+        $form = $this->form->getAsArray();
+
+        $this->assertInternalType('array', $form);
     }
 }

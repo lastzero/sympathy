@@ -1,5 +1,5 @@
 form:
-  datetime: "m/d/Y H:i:s"
+  datetime: "m/d/Y H:i"
   date: "m/d/Y"
   time: "H:i:s"
   decimal_point: "."

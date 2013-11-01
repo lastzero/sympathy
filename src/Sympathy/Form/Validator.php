@@ -108,9 +108,8 @@ class Validator
                 if ($value < $def['min']) {
                     $this->addError($key, 'form.value_is_too_small', array('%limit%' => $def['min']));
                 }
-            } elseif (isset($def['type']) && $def['type'] == 'date') {
-                $format = $this->translate('form.date');
-                if ($date = DateTime::createFromFormat($format, $value)) {
+            } elseif (isset($def['type']) && ($def['type'] == 'date' || $def['type'] == 'datetime')) {
+                if ($value instanceof DateTime) {
                     if (is_int($def['min'])) {
                         $limit = new DateTime();
                         $limit->sub(new DateInterval('P' . $def['min'] . 'D'));
@@ -118,7 +117,9 @@ class Validator
                         $limit = new DateTime($def['min']);
                     }
 
-                    if ($date < $limit) {
+                    if ($value < $limit) {
+                        $format = $this->translate('form.' . $def['type']);
+
                         $this->addError($key, 'form.value_is_too_far_in_the_past', array('%limit%' => $limit->format($format)));
                     }
                 }
@@ -142,9 +143,8 @@ class Validator
                 if ($value > $def['max']) {
                     $this->addError($key, 'form.value_is_too_big', array('%limit%' => $def['max']));
                 }
-            } elseif (isset($def['type']) && $def['type'] == 'date') {
-                $format = $this->translate('form.date');
-                if ($date = DateTime::createFromFormat($format, $value)) {
+            } elseif (isset($def['type']) && ($def['type'] == 'date' || $def['type'] == 'datetime')) {
+                if ($value instanceof DateTime) {
                     if (is_int($def['max'])) {
                         $limit = new DateTime();
                         $limit->add(new DateInterval('P' . $def['max'] . 'D'));
@@ -152,7 +152,8 @@ class Validator
                         $limit = new DateTime($def['max']);
                     }
 
-                    if ($date > $limit) {
+                    if ($value > $limit) {
+                        $format = $this->translate('form.' . $def['type']);
                         $this->addError($key, 'form.value_is_too_far_in_the_future', array('%limit%' => $limit->format($format)));
                     }
                 }
@@ -324,8 +325,7 @@ class Validator
                 case 'date':
                 case 'time':
                 case 'datetime':
-                    $format = $this->translate('form.' . $def['type']);
-                    if (DateTime::createFromFormat($format, $value) === false) {
+                    if (!is_object($value) && DateTime::createFromFormat($this->translate('form.' . $def['type']), $value) === false) {
                         $this->addError($key, 'form.value_type_' . $def['type']);
                     }
                     break;

@@ -3,6 +3,7 @@
 namespace Sympathy\Form;
 
 use Symfony\Component\Translation\TranslatorInterface as Translator;
+use DateTime;
 
 /**
  * \Sympathy\Form\Form can be used to validate user input of any origin (POST data, CLI or SOAP/REST)
@@ -186,29 +187,6 @@ class Form
     }
 
     /**
-     * Returns form fields structured in groups (you must use setGroups() first)
-     *
-     * @return array
-     */
-    public function getFormByGroup()
-    {
-        $form = $this->getForm();
-        $result = array();
-
-        foreach ($this->_groups as $groupName => $memberKeys) {
-            $members = array();
-
-            foreach ($memberKeys as $key) {
-                $members[$key] = $form[$key];
-            }
-
-            $result[$this->_('group_' . $groupName)] = $members;
-        }
-
-        return $result;
-    }
-
-    /**
      * @return Translator
      * @throws Exception
      */
@@ -373,14 +351,45 @@ class Form
      *
      * @return array
      */
-    public function getForm()
+    public function getAsArray()
     {
         $result = array();
 
         foreach ($this->_definition as $key => $def) {
             $result[$key] = $def;
-            $result[$key]['value'] = $this->$key;
+            $value = $this->$key;
+            $type = $def['type'];
+
+            if (($type == 'date' || $type == 'datetime' || $type == 'time') && is_object($value)) {
+                $value = $value->format($this->translate('form.' . $type));
+            }
+
+            $result[$key]['value'] = $value;
             $result[$key]['uid'] = 'id' . uniqid();
+        }
+
+        return $result;
+    }
+
+
+    /**
+     * Returns form fields structured in groups (you must use setGroups() first)
+     *
+     * @return array
+     */
+    public function getAsGroupedArray()
+    {
+        $form = $this->getAsArray();
+        $result = array();
+
+        foreach ($this->_groups as $groupName => $memberKeys) {
+            $members = array();
+
+            foreach ($memberKeys as $key) {
+                $members[$key] = $form[$key];
+            }
+
+            $result[$this->_('group_' . $groupName)] = $members;
         }
 
         return $result;
@@ -604,15 +613,22 @@ class Form
     public function __set($key, $val)
     {
         if (isset($this->_definition[$key])) {
-            if ($this->getDefinition($key, 'type') == 'list' && $val == array('')) {
+            $type = $this->getDefinition($key, 'type');
+            if ($type == 'list' && $val == array('')) {
                 $val = array();
             }
 
-            if ($this->getDefinition($key, 'type') == 'bool') {
+            if ($type == 'bool') {
                 $val = (bool)$val;
             }
 
-            if ($this->getDefinition($key, 'type') != 'string' && $val === '') {
+            if (($type == 'date' || $type == 'datetime' || $type == 'time') && !empty($val) && !is_object($val)) {
+                if ($date = DateTime::createFromFormat($this->translate('form.' . $type), $val)) {
+                    $val = $date;
+                }
+            }
+
+            if ($type != 'string' && $val === '') {
                 $val = null;
             }
 
