@@ -24,6 +24,9 @@ abstract class Model {
     protected $_factoryNamespace = '';
     protected $_factoryPostfix = 'Model';
 
+    protected $_daoFactoryNamespace = '';
+    protected $_daoFactoryPostfix = 'Dao';
+
     /**
      * @param $db Db The current database connection instance
      * @param $dao Dao An instance of a DOA to initialize this instance (otherwise, you must call find/search)
@@ -39,7 +42,7 @@ abstract class Model {
     /**
      * Creates a new data access object (DAO) instance
      *
-     * @param string $name Class name without prefix
+     * @param string $name Class name without prefix namespace and postfix
      * @throws Exception
      * @return Entity
      */
@@ -54,7 +57,7 @@ abstract class Model {
             throw new Exception ('Database instance was not set');
         }
 
-        $className = $daoName;
+        $className = $this->_daoFactoryNamespace . '\\' . $daoName  . $this->_daoFactoryPostfix;
 
         $dao = new $className ($this->_db);
 
