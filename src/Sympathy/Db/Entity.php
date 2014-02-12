@@ -514,9 +514,9 @@ abstract class Entity extends Dao
 
         $params = array_merge($defaults, $params);
 
-        // Optional SQL filter table alias canonization (default value and always big letters)
+        // Optional SQL filter table alias canonization
         if (empty($params['table_alias'])) {
-            $params['table_alias'] = 'A';
+            $params['table_alias'] = substr($params['table'], 0, 1);
         }
 
         $select = $this->createQueryBuilder();
@@ -539,7 +539,8 @@ abstract class Entity extends Dao
         // Check for optional ID filters (sets; pre-defined result lists)
         if (count($params['id_filter']) > 0) {
             $select->where($this->getQuotedKey($this->_primaryKey, $params['table_alias'])
-                . ' IN (?)', $params['id_filter']);
+                . ' IN ('. $this->sqlImplode($params['id_filter']) .')');
+            //$select->setParameter(':id_filter', $params['id_filter']);
         }
 
         // Optional grouping
@@ -557,35 +558,40 @@ abstract class Entity extends Dao
 
                 $select->addSelect($col);
             }
+        } else {
+            $select->addSelect($params['table_alias'] . '.*');
         }
 
         // Optional join
         if ($params['join'] && is_array($params['join'])) {
             foreach ($params['join'] as $join) {
-                $joinCond = str_replace($this->_tableName . '.', $params['table_alias'] . '.', $join[1]);
-                $countSelect->join($join[0], $joinCond, array());
-                $joinCols = isset($join[2]) && !$params['ids_only'] ? $join[2] : array();
-                $select->join($join[0], $joinCond, $joinCols);
+                $countSelect->join($join[0], $join[1], $join[2], $join[3]);
+
+                $select->join($join[0], $join[1], $join[2], $join[3]);
+
+                if(!$params['ids_only'] && isset($join[4])) {
+                    $select->addSelect($join[4]);
+                }
             }
         }
 
         if ($params['left_join'] && is_array($params['left_join'])) {
             foreach ($params['left_join'] as $join) {
-                $joinCond = str_replace($this->_tableName . '.', $params['table_alias'] . '.', $join[1]);
-                $countSelect->leftJoin($join[0], $joinCond, array());
-                $joinCols = isset($join[2]) && !$params['ids_only'] ? $join[2] : array();
-                $select->leftJoin($join[0], $joinCond, $joinCols);
+                $countSelect->leftJoin($join[0], $join[1], $join[2], $join[3]);
+
+                $select->leftJoin($join[0], $join[1], $join[2], $join[3]);
+
+                if(!$params['ids_only'] && isset($join[4])) {
+                    $select->addSelect($join[4]);
+                }
             }
         }
 
         if ($params['ids_only']) {
             $select->select(array('id' => $this->_primaryKey));
-            // Speical "ids_only" mode to fetch primary key only
-            $select->from($params['table'], $params['table_alias']);
-        } else {
-            // Default: Query all columns
-            $select->from($params['table'], $params['table_alias']);
         }
+
+        $select->from($params['table'], $params['table_alias']);
 
         $filterSelect = clone $select;
 
@@ -598,7 +604,8 @@ abstract class Entity extends Dao
         if ($params['count']) {
             $select->setMaxResults($params['count'])->setFirstResult($params['offset']);
 
-            $countSelect->from(array($params['table_alias'] => $params['table']), array('count' => 'COUNT(*)'));
+            $countSelect->from($params['table'], $params['table_alias']);
+            $countSelect->select(array('COUNT(*) AS count'));
 
             $count = $this->fetchOne($countSelect);
         }
