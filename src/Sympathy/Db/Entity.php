@@ -125,7 +125,6 @@ abstract class Entity extends Dao
     public function setValues(array $data)
     {
         foreach ($data as $name => $value) {
-            $name = strtoupper($name); // For Oracle
             $this->$name = $value;
         }
     }
@@ -230,7 +229,7 @@ abstract class Entity extends Dao
                     $val = Format::toSql($this->_formatMap[$key], $val);
                 }
 
-                $select->where($this->getDb()->quoteIdentifier($key) . ' = ' . $db->quote($val));
+                $select->where($this->getDb()->quoteIdentifier($key) . ' = ' . $db->quote($id));
             }
         } else {
             if (isset($this->_formatMap[$this->_primaryKey])) {
@@ -305,7 +304,7 @@ abstract class Entity extends Dao
         $db->update(
             $this->_tableName,
             $fields,
-            $this->getWhere()
+            $this->getWhereAsArray()
         );
 
         // Update original data
@@ -340,18 +339,39 @@ abstract class Entity extends Dao
             $list = array();
 
             foreach ($this->_primaryKey as $key) {
-                $list[] = $db->quoteIdentifier(strtoupper($key))
+                $list[] = $db->quoteIdentifier($key)
                     . ' = ' . $db->quote($this->$key);
             }
 
             $where = implode(' AND ', $list);
         } else {
-            $where = $this->getDb()->quoteIdentifier(strtoupper($this->_primaryKey))
+            $where = $db->quoteIdentifier($this->_primaryKey)
                 . ' = ' . $db->quote($this->getId());
         }
 
         return $where;
     }
+
+    /**
+     * Returns where party of query as array for Doctrine update()
+     *
+     * @return array
+     */
+    protected function getWhereAsArray()
+    {
+        $where = array();
+
+        if (is_array($this->_primaryKey)) {
+            foreach ($this->_primaryKey as $key) {
+                $where[$key] = $this->$key;
+            }
+        } else {
+            $where[$this->_primaryKey] = $this->getId();
+        }
+
+        return $where;
+    }
+
 
     /**
      * Returns the primary key (or an exception, if it was not set yet)
@@ -961,7 +981,6 @@ abstract class Entity extends Dao
     protected function columnIsRequired(array $searchParams, $column)
     {
         $result = false;
-        $column = strtoupper($column);
 
         if (empty($searchParams['columns']) || in_array($column, $searchParams['columns'])) {
             return true;
@@ -977,7 +996,7 @@ abstract class Entity extends Dao
             foreach ($order as $orderCol) {
                 // Postfix of $orderCol can be the sorting direction (ASC/DESC)
                 $parts = explode(' ', $orderCol);
-                if ($column == strtoupper($parts[0])) {
+                if ($column == $parts[0]) {
                     $result = true;
                 }
             }
