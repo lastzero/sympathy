@@ -179,9 +179,11 @@ abstract class Entity extends Dao
     public function find($id)
     {
         $db = $this->getDb();
+        $alias = $this->getDefaultTableAlias();
+
         $select = $this->createQueryBuilder();
         $select->select('*');
-        $select->from($this->_tableName, 'a');
+        $select->from($this->_tableName, $alias);
 
         if (is_array($id)) {
             foreach ($id as $key => $val) {
@@ -218,6 +220,7 @@ abstract class Entity extends Dao
      */
     public function exists($id)
     {
+        $db = $this->getDb();
         $select = $this->createQueryBuilder();
         $select->from($this->_tableName, 'a');
 
@@ -227,14 +230,14 @@ abstract class Entity extends Dao
                     $val = Format::toSql($this->_formatMap[$key], $val);
                 }
 
-                $select->where($this->getDb()->quoteIdentifier($key) . ' = ?', $val);
+                $select->where($this->getDb()->quoteIdentifier($key) . ' = ' . $db->quote($id));
             }
         } else {
             if (isset($this->_formatMap[$this->_primaryKey])) {
                 $id = Format::fromSql($this->_formatMap[$this->_primaryKey], $id);
             }
 
-            $select->where($this->getDb()->quoteIdentifier($this->_primaryKey) . ' = ?', $id);
+            $select->where($this->getDb()->quoteIdentifier($this->_primaryKey) . ' = ' . $db->quote($id));
         }
 
         $data = $this->getDb()->fetchAssoc($select);
@@ -331,18 +334,20 @@ abstract class Entity extends Dao
      */
     protected function getWhere()
     {
+        $db = $this->getDb();
+
         if (is_array($this->_primaryKey)) {
             $list = array();
 
             foreach ($this->_primaryKey as $key) {
-                $list[] = $this->getDb()->quoteIdentifier(strtoupper($key))
-                    . ' = ' . $this->getDb()->quote($this->$key);
+                $list[] = $db->quoteIdentifier(strtoupper($key))
+                    . ' = ' . $db->quote($this->$key);
             }
 
             $where = implode(' AND ', $list);
         } else {
             $where = $this->getDb()->quoteIdentifier(strtoupper($this->_primaryKey))
-                . ' = ' . $this->getDb()->quote($this->getId());
+                . ' = ' . $db->quote($this->getId());
         }
 
         return $where;
@@ -428,7 +433,11 @@ abstract class Entity extends Dao
     public function findAll(array $cond = array(), $wrapResult = true)
     {
         $select = $this->createQueryBuilder();
-        $select->from($this->_tableName, 'a');
+        $alias = $this->getDefaultTableAlias();
+
+        $db = $this->getDb();
+        $select->from($this->_tableName, $alias);
+        $select->select('*');
 
         foreach ($cond as $key => $val) {
             if (is_numeric($key) && is_scalar($val) && $val !== NULL) {
@@ -436,25 +445,25 @@ abstract class Entity extends Dao
                     $val = Format::fromSql($this->_formatMap[$this->_primaryKey], $val);
                 }
 
-                $select->orWhere($this->getDb()->quoteIdentifier($this->_primaryKey) . ' = ?', $val);
+                $select->orWhere($db->quoteIdentifier($this->_primaryKey) . ' = ' . $db->quote($val));
             } elseif (is_int($key) && is_object($val)) {
                 $select->where((string)$val);
             } elseif (is_int($key) && is_array($val)) {
-                $select->where($this->getDb()->quoteIdentifier($this->_primaryKey) . ' IN (?)', $val);
+                $select->where($db->quoteIdentifier($this->_primaryKey) . ' IN (' . $this->sqlImplode($val) . ')');
             } elseif (is_string($key) && is_array($val) && count($val) > 0) {
-                $select->where($this->getDb()->quoteIdentifier($key) . ' IN (?)', $val);
+                $select->where($db->quoteIdentifier($key) . ' IN (' . $this->sqlImplode($val) . ')');
             } elseif (is_string($key) && $val === NULL) {
-                $select->where($this->getDb()->quoteIdentifier($key) . ' IS NULL');
+                $select->where($db->quoteIdentifier($key) . ' IS NULL');
             } else {
                 if (isset($this->_formatMap[$key])) {
                     $val = Format::fromSql($this->_formatMap[$key], $val);
                 }
 
-                $select->where($this->getDb()->quoteIdentifier($key) . ' = ?', $val);
+                $select->where($db->quoteIdentifier($key) . ' = ' . $db->quote($val));
             }
         }
 
-        $rows = $this->getDb()->fetchAll($select);
+        $rows = $db->fetchAll($select);
 
         if ($wrapResult) {
             return $this->wrapAll($rows);
@@ -487,6 +496,18 @@ abstract class Entity extends Dao
     }
 
     /**
+     * @param string $tableName Optional table name (if different from the default)
+     * @return string The default table alias (first character of the table name)
+     */
+    private function getDefaultTableAlias ($tableName = '') {
+        if($tableName == '') {
+            $tableName = $this->_tableName;
+        }
+
+        return substr($tableName, 0, 1);
+    }
+
+    /**
      * More powerful alternative to findAll() to search the database incl. count, offset, order etc.
      *
      * @param array $params The search parameter (see beginning of function for supported options)
@@ -516,9 +537,10 @@ abstract class Entity extends Dao
 
         // Optional SQL filter table alias canonization
         if (empty($params['table_alias'])) {
-            $params['table_alias'] = substr($params['table'], 0, 1);
+            $params['table_alias'] = $this->getDefaultTableAlias($params['table']);
         }
 
+        $db = $this->getDb();
         $select = $this->createQueryBuilder();
 
         // Build WHERE conditions
@@ -526,13 +548,13 @@ abstract class Entity extends Dao
             if (is_int($key)) {
                 $select->where($val);
             } elseif (is_array($val) && count($val) > 0) {
-                $select->where($this->getQuotedKey($key, $params['table_alias']) . ' IN (?)', $val);
+                $select->where($this->getQuotedKey($key, $params['table_alias']) . ' IN (' . $this->sqlImplode($val) . ')');
             } elseif (!is_array($val) && $val !== '' && $val !== null) {
                 if (is_bool($val)) {
                     $val = (int)$val;
                 }
 
-                $select->where($this->getQuotedKey($key, $params['table_alias']) . ' = ?', $val);
+                $select->where($this->getQuotedKey($key, $params['table_alias']) . ' = ' . $db->quote($val));
             }
         }
 
