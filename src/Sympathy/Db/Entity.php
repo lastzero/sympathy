@@ -323,7 +323,7 @@ abstract class Entity extends Dao
     {
         $db = $this->getDb();
 
-        return $db->delete($this->_tableName, $this->getWhere());
+        return $db->delete($this->_tableName, $this->getWhereAsArray());
     }
 
     /**
@@ -853,9 +853,8 @@ abstract class Entity extends Dao
 
         foreach ($existing as $id) {
             if (!in_array($id, $updated)) {
-                $where = $db->quoteIdentifier($primaryKeyName) . ' = ' . $db->quote($this->getId());
-                $where .= ' AND ' . $db->quoteIdentifier($foreignKeyName) . ' = ' . $db->quote($id);
-                $this->getDb()->delete($relationTable, $where);
+                $whereArray = array($primaryKeyName => $this->getId(), $foreignKeyName => $id);
+                $this->getDb()->delete($relationTable, $whereArray);
             }
         }
     }
