@@ -201,12 +201,12 @@ abstract class Model {
     }
 
     /**
-     * Returns the model name without Model_ prefix
+     * Returns the model name without prefix and postfix
      *
      * @return string
      */
     public function getModelName () {
-        $modelName = substr(get_class($this), 10);
+        $modelName = substr(get_class($this), strlen($this->_factoryNamespace), strlen($this->_factoryPostfix) * -1);
 
         return $modelName;
     }
@@ -238,12 +238,12 @@ abstract class Model {
     public function getValues () {
         return $this->getDao()->getValues();
     }
-    
+
     /**
      * Return the common name of this entity (for lists or box titles)
-     * 
+     *
      * Should be overwritten by inherited classes
-     * 
+     *
      * @return string
      */
     public function getEntityTitle () {
@@ -259,7 +259,7 @@ abstract class Model {
     public function isDeletable () {
         return true;
     }
-    
+
     /**
      * Update the data of multiple DAO instances
      *
@@ -310,7 +310,7 @@ abstract class Model {
     public function __get ($name) {
         return $this->getDao()->$name;
     }
-    
+
     /**
      * Magic setter
      *
@@ -335,12 +335,12 @@ abstract class Model {
         return $this->getDao()->hasTimestampEnabled();
     }
 
-    /**     
+    /**
      * Deletes the stored data without any checks
      */
     protected function _delete () {
         $dao = $this->getDao();
-        
+
         // Start the database transaction
         $dao->beginTransaction();
 
@@ -351,29 +351,29 @@ abstract class Model {
         } catch (Exception $e) {
             // Roll back in case of ANY error and throw exception
             $dao->rollBack();
-            
+
             throw $e;
         }
     }
-    
+
     /**
      * Permanently deletes the entity instance
-     * 
+     *
      * @throws DeleteException
      */
     public function delete () {
         if(!$this->hasId() || !$this->isDeletable()) {
             throw new DeleteException('Entity can not be deleted');
         }
-        
+
         $this->_delete();
         $this->resetDao();
-        return $this;        
+        return $this;
     }
-    
+
     /**
      * Permanently stores the entity
-     * 
+     *
      * @param Form $form
      * @throws InvalidFormException
      * @throws CreateException
@@ -384,13 +384,13 @@ abstract class Model {
         if($form->hasErrors()) {
             throw new InvalidFormException('Form passed to create() has errors');
         }
-        
+
         if(!method_exists($this, '_createFromForm')) {
             throw new CreateException('You need to implement _createFromForm($form) first');
         }
-        
+
         $dao = $this->getDao();
-       
+
         // Start the database transaction
         $dao->beginTransaction();
 
@@ -408,16 +408,16 @@ abstract class Model {
         } catch (Exception $e) {
             // Roll back in case of ANY error and throw exception
             $dao->rollBack();
-            
+
             throw $e;
         }
 
-        return $this;   
+        return $this;
     }
-    
+
     /**
      * Updates stored entity data
-     * 
+     *
      * @param Form $form
      * @throws InvalidFormException
      * @throws UpdateException
@@ -428,13 +428,13 @@ abstract class Model {
         if($form->hasErrors()) {
             throw new InvalidFormException('Form passed to update() has errors');
         }
-        
+
         if(!method_exists($this, '_updateFromForm')) {
             throw new UpdateException('You need to implement _createFromForm($form) first');
         }
-        
+
         $dao = $this->getDao();
-       
+
         // Start the database transaction
         $dao->beginTransaction();
 
@@ -445,17 +445,17 @@ abstract class Model {
              * protected function _updateFromForm (Form $form) {
              *     $this->getDao()->setValues($form->getValues())->update();
              * }
-             */            
+             */
             $this->_updateFromForm($form);
 
             $dao->commit();
         } catch (Exception $e) {
             // Roll back in case of ANY error and throw exception
             $dao->rollBack();
-            
+
             throw $e;
         }
 
-        return $this;   
+        return $this;
     }
 }
