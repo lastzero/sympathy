@@ -206,7 +206,7 @@ abstract class Model {
      * @return string
      */
     public function getModelName () {
-        $modelName = substr(get_class($this), strlen($this->_factoryNamespace), strlen($this->_factoryPostfix) * -1);
+        $modelName = substr(get_class($this), strlen($this->_factoryNamespace) + 1, strlen($this->_factoryPostfix) * -1);
 
         return $modelName;
     }
