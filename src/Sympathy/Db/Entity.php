@@ -190,7 +190,7 @@ abstract class Entity extends Dao
                     $val = Format::toSql($this->_formatMap[$key], $val);
                 }
 
-                $select->where($db->quoteIdentifier($key) . ' = ' . $db->quote($val));
+                $select->andWhere($db->quoteIdentifier($key) . ' = ' . $db->quote($val));
             }
         } else {
             if (isset($this->_formatMap[$this->_primaryKey])) {
@@ -229,7 +229,7 @@ abstract class Entity extends Dao
                     $val = Format::toSql($this->_formatMap[$key], $val);
                 }
 
-                $select->where($this->getDb()->quoteIdentifier($key) . ' = ' . $db->quote($val));
+                $select->andWhere($this->getDb()->quoteIdentifier($key) . ' = ' . $db->quote($val));
             }
         } else {
             if (isset($this->_formatMap[$this->_primaryKey])) {
@@ -467,19 +467,19 @@ abstract class Entity extends Dao
 
                 $select->orWhere($db->quoteIdentifier($this->_primaryKey) . ' = ' . $db->quote($val));
             } elseif (is_int($key) && is_object($val)) {
-                $select->where((string)$val);
+                $select->andWhere((string)$val);
             } elseif (is_int($key) && is_array($val)) {
-                $select->where($db->quoteIdentifier($this->_primaryKey) . ' IN (' . $this->sqlImplode($val) . ')');
+                $select->andWhere($db->quoteIdentifier($this->_primaryKey) . ' IN (' . $this->sqlImplode($val) . ')');
             } elseif (is_string($key) && is_array($val) && count($val) > 0) {
-                $select->where($db->quoteIdentifier($key) . ' IN (' . $this->sqlImplode($val) . ')');
+                $select->andWhere($db->quoteIdentifier($key) . ' IN (' . $this->sqlImplode($val) . ')');
             } elseif (is_string($key) && $val === NULL) {
-                $select->where($db->quoteIdentifier($key) . ' IS NULL');
+                $select->andWhere($db->quoteIdentifier($key) . ' IS NULL');
             } else {
                 if (isset($this->_formatMap[$key])) {
                     $val = Format::fromSql($this->_formatMap[$key], $val);
                 }
 
-                $select->where($db->quoteIdentifier($key) . ' = ' . $db->quote($val));
+                $select->andWhere($db->quoteIdentifier($key) . ' = ' . $db->quote($val));
             }
         }
 
@@ -566,21 +566,21 @@ abstract class Entity extends Dao
         // Build WHERE conditions
         foreach ($params['cond'] as $key => $val) {
             if (is_int($key)) {
-                $select->where($val);
+                $select->andWhere($val);
             } elseif (is_array($val) && count($val) > 0) {
-                $select->where($this->getQuotedKey($key, $params['table_alias']) . ' IN (' . $this->sqlImplode($val) . ')');
+                $select->andWhere($this->getQuotedKey($key, $params['table_alias']) . ' IN (' . $this->sqlImplode($val) . ')');
             } elseif (!is_array($val) && $val !== '' && $val !== null) {
                 if (is_bool($val)) {
                     $val = (int)$val;
                 }
 
-                $select->where($this->getQuotedKey($key, $params['table_alias']) . ' = ' . $db->quote($val));
+                $select->andWhere($this->getQuotedKey($key, $params['table_alias']) . ' = ' . $db->quote($val));
             }
         }
 
         // Check for optional ID filters (sets; pre-defined result lists)
         if (count($params['id_filter']) > 0) {
-            $select->where($this->getQuotedKey($this->_primaryKey, $params['table_alias'])
+            $select->andWhere($this->getQuotedKey($this->_primaryKey, $params['table_alias'])
                 . ' IN ('. $this->sqlImplode($params['id_filter']) .')');
             //$select->setParameter(':id_filter', $params['id_filter']);
         }
@@ -639,8 +639,8 @@ abstract class Entity extends Dao
 
         // Check for optional SQL filters
         if ($params['sql_filter'] != '') {
-            $select->where($params['sql_filter']);
-            $countSelect->where($params['sql_filter']);
+            $select->andWhere($params['sql_filter']);
+            $countSelect->andWhere($params['sql_filter']);
         }
 
         if ($params['count']) {
