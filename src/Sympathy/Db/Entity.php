@@ -229,7 +229,7 @@ abstract class Entity extends Dao
                     $val = Format::toSql($this->_formatMap[$key], $val);
                 }
 
-                $select->where($this->getDb()->quoteIdentifier($key) . ' = ' . $db->quote($id));
+                $select->where($this->getDb()->quoteIdentifier($key) . ' = ' . $db->quote($val));
             }
         } else {
             if (isset($this->_formatMap[$this->_primaryKey])) {
