@@ -3,7 +3,6 @@
 namespace Sympathy\Db;
 
 use Doctrine\DBAL\Connection as Db;
-use Doctrine\DBAL\Query\QueryBuilder;
 use DateTime;
 
 /**
@@ -655,9 +654,11 @@ abstract class Entity extends Dao
         // Optional ordering of results
         if ($params['order']) {
             if (is_array($params['order'])) {
-                $select->orderBy($params['order']);
+                foreach($params['order'] as $sortOrder) {
+                    $select->addOrderBy($this->getOrderField($sortOrder), $this->getOrderDirection($sortOrder));
+                }
             } else {
-                $select->orderBy($this->composeOrderArgument($params['order']));
+                $select->addOrderBy($this->getOrderField($params['order']), $this->getOrderDirection($sortOrder));
             }
         }
 
@@ -794,6 +795,25 @@ abstract class Entity extends Dao
         }
 
         return $order;
+    }
+
+    protected function getOrderDirection ($sortOrder) {
+        $parts = explode(' ', $sortOrder);
+
+        if(count($parts) == 2 && strtoupper($parts[1]) == 'DESC') {
+            $result = 'DESC';
+        } else {
+            $result = 'ASC';
+        }
+
+        return $result;
+    }
+
+    protected function getOrderField ($sortOrder) {
+        $parts = explode(' ', $sortOrder);
+        $result = $parts[0];
+
+        return $result;
     }
 
     /**
