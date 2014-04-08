@@ -911,7 +911,7 @@ abstract class Entity extends Dao
         }
 
         if ($order) {
-            $select->orderBy($order);
+            $select->orderBy($this->getOrderField($order), $this->getOrderDirection($order));
         }
 
         $result = array();
