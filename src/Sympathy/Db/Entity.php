@@ -829,7 +829,7 @@ abstract class Entity extends Dao
 
         foreach ($keys AS $key) {
             $result[] = 'UPPER(' . $this->getDb()->quoteIdentifier($key) . ') LIKE UPPER('
-                . str_replace('*', '%', $this->getDb()->quote('%' . $value . '%')) . ')';
+                . $this->getDb()->quote(str_replace('*', '%', '%' . $value . '%')) . ')';
         }
 
         return '(' . implode(' OR ', $result) . ')';
