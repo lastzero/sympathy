@@ -895,14 +895,19 @@ abstract class Entity extends Dao
      * @param string $colName The value column name
      * @param string $order The sort order
      * @param string $where An optional filter (raw SQL)
+     * @param string $indexName Optional key name (default is the primary key)
      * @return array
      */
-    public function findList($colName, $order = '', $where = '')
+    public function findList($colName, $order = '', $where = '', $indexName = '')
     {
         $db = $this->getDb();
 
+        if(!$indexName) {
+            $indexName = $this->_primaryKey;
+        }
+
         $select = $this->createQueryBuilder();
-        $select->select(array($this->_primaryKey, $colName));
+        $select->select(array($indexName, $colName));
 
         $select->from($this->_tableName, 'a');
 
@@ -918,7 +923,7 @@ abstract class Entity extends Dao
         $rows = $db->fetchAll($select);
 
         foreach ($rows as $row) {
-            $result[$row[$this->_primaryKey]] = $row[$colName];
+            $result[$row[$indexName]] = $row[$colName];
         }
 
         return $result;
