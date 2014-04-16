@@ -918,7 +918,7 @@ abstract class Entity extends Dao
         $rows = $db->fetchAll($select);
 
         foreach ($rows as $row) {
-            $result[$row[$this->_primaryKey]] = $result[$colName];
+            $result[$row[$this->_primaryKey]] = $row[$colName];
         }
 
         return $result;
