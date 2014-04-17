@@ -430,7 +430,7 @@ abstract class Model {
         }
 
         if(!method_exists($this, '_updateFromForm')) {
-            throw new UpdateException('You need to implement _createFromForm($form) first');
+            throw new UpdateException('You need to implement _updateFromForm($form) first');
         }
 
         $dao = $this->getDao();
