@@ -179,6 +179,28 @@ abstract class Model {
     }
 
     /**
+     * Search for a single row; throws an exception if 0 or more than 1 rows are found
+     *
+     * @param array $cond The search conditions as array
+     * @throws NotFoundException
+     * @return array
+     */
+    public function searchOne (array $cond = array()) {
+        $options = array(
+            'count' => 1,
+            'offset' => 0
+        );
+
+        $result = $this->search($cond, $options);
+
+        if($result['total'] != 1) {
+            throw new NotFoundException($result['total'] . ' matching items found');
+        }
+
+        return $result['rows'][0];
+    }
+
+    /**
      * Returns an array of matching primary keys for the given search condition
      *
      * @param array $cond
