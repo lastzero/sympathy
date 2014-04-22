@@ -4,6 +4,7 @@ namespace Sympathy\Db;
 
 use Doctrine\DBAL\Connection as Db;
 use DateTime;
+use InvalidArgumentException;
 
 /**
  * Data Access Object for SQL database entities
@@ -172,6 +173,7 @@ abstract class Entity extends Dao
      *
      * @param mixed $id Primary Key
      * @throws NotFoundException
+     * @throws InvalidArgumentException
      * @return $this
      */
     public function find($id)
@@ -183,6 +185,12 @@ abstract class Entity extends Dao
         $select->select('*');
         $select->from($this->_tableName, $alias);
 
+        if(is_array($this->_primaryKey) && count($this->_primaryKey) == 1) {
+            $primaryKey = $this->_primaryKey[0];
+        } else {
+            $primaryKey = $this->_primaryKey;
+        }
+
         if (is_array($id)) {
             foreach ($id as $key => $val) {
                 if (isset($this->_formatMap[$key])) {
@@ -191,12 +199,14 @@ abstract class Entity extends Dao
 
                 $select->andWhere($db->quoteIdentifier($key) . ' = ' . $db->quote($val));
             }
-        } else {
-            if (isset($this->_formatMap[$this->_primaryKey])) {
-                $id = Format::toSql($this->_formatMap[$this->_primaryKey], $id);
+        } elseif(!is_array($primaryKey)) {
+            if (isset($this->_formatMap[$primaryKey])) {
+                $id = Format::toSql($this->_formatMap[$primaryKey], $id);
             }
 
-            $select->where($db->quoteIdentifier($this->_primaryKey) . ' = ' . $db->quote($id));
+            $select->where($db->quoteIdentifier($primaryKey) . ' = ' . $db->quote($id));
+        } else {
+            throw new InvalidArgumentException ('$id must be an array for compound primary keys');
         }
 
         $data = $db->fetchAssoc($select);
