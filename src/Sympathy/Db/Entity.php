@@ -658,7 +658,7 @@ abstract class Entity extends Dao
                     $select->addOrderBy($this->getOrderField($sortOrder), $this->getOrderDirection($sortOrder));
                 }
             } else {
-                $select->addOrderBy($this->getOrderField($params['order']), $this->getOrderDirection($sortOrder));
+                $select->addOrderBy($this->getOrderField($params['order']), $this->getOrderDirection($params['order']));
             }
         }
 
