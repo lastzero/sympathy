@@ -528,7 +528,7 @@ abstract class Entity extends Dao
      * @param string $tableName Optional table name (if different from the default)
      * @return string The default table alias (first character of the table name)
      */
-    private function getDefaultTableAlias ($tableName = '') {
+    protected function getDefaultTableAlias ($tableName = '') {
         if($tableName == '') {
             $tableName = $this->_tableName;
         }
