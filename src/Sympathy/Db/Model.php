@@ -123,9 +123,21 @@ abstract class Model {
         }
 
         if($wrapResult) {
-            foreach ($result as &$row) {
-                $row = $this->factory($this->getModelName(), $row);
-            }
+            $result = $this->wrapAll($result);
+        }
+
+        return $result;
+    }
+
+    /**
+     * Wraps all DAO result entities in model instances
+     *
+     * @param array $result
+     * @return array
+     */
+    protected function wrapAll(array $result) {
+        foreach ($result as &$entity) {
+            $entity = $this->factory($this->getModelName(), $entity);
         }
 
         return $result;
@@ -150,10 +162,7 @@ abstract class Model {
         }
 
         if(!isset($options['ids_only']) || $options['ids_only'] == false) {
-            foreach ($result['rows'] as &$row) {
-                // Wrap search results in model instances
-                $row = $this->factory($this->getModelName(), $row);
-            }
+            $result['rows'] = $this->wrapAll($result['rows']);
         }
 
         return $result;
