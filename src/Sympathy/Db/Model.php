@@ -9,8 +9,8 @@ use Sympathy\Form\Form;
  * Business Models are logically located between the controllers, which render
  * the views and validate user input, and the DAOs, that are the low-level
  * interface to the storage backend. The public interface of models is high-level and
- * should reflect the all use cases for the business domain. There is a number of standard
- * use-cases that are pre-implemented in this base class for convenience reasons.
+ * should reflect the all use cases for the business domain. There are a number of standard
+ * use-cases that are pre-implemented in this base class for your convenience.
  *
  * @author Michael Mayer <michael@liquidbytes.net>
  * @package Sympathy
@@ -50,11 +50,11 @@ abstract class Model {
         $daoName = empty($name) ? $this->_daoName : $name;
 
         if(empty($daoName)) {
-            throw new Exception ('Default DAO name was not set');
+            throw new Exception ('The DAO factory requires a DAO name');
         }
 
         if(empty($this->_db)) {
-            throw new Exception ('Database instance was not set');
+            throw new Exception ('Database instance is empty in DAO factory');
         }
 
         $className = $this->_daoFactoryNamespace . '\\' . $daoName  . $this->_daoFactoryPostfix;
@@ -87,11 +87,22 @@ abstract class Model {
     /**
      * Creates a new model instance
      *
-     * @param string $modelName
+     * @param string $name Optional model name (current model name if empty)
      * @param Dao $dao DB DAO instance
+     * @throws Exception
      * @return Model
      */
-    public function factory ($modelName, Dao $dao = null) {
+    public function factory ($name = '', Dao $dao = null) {
+        $modelName = empty($name) ? $this->getModelName() : $name;
+
+        if(empty($modelName)) {
+            throw new Exception ('The model factory requires a model name');
+        }
+
+        if(empty($this->_db)) {
+            throw new Exception ('Database instance is empty in model factory');
+        }
+
         $className = $this->_factoryNamespace . '\\' . $modelName . $this->_factoryPostfix;
 
         $model = new $className ($this->_db, $dao);
@@ -136,8 +147,10 @@ abstract class Model {
      * @return array
      */
     protected function wrapAll(array $result) {
+        $modelName = $this->getModelName();
+
         foreach ($result as &$entity) {
-            $entity = $this->factory($this->getModelName(), $entity);
+            $entity = $this->factory($modelName, $entity);
         }
 
         return $result;
