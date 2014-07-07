@@ -9,8 +9,8 @@ use Sympathy\Form\Form;
  * Business Models are logically located between the controllers, which render
  * the views and validate user input, and the DAOs, that are the low-level
  * interface to the storage backend. The public interface of models is high-level and
- * should reflect the all use cases for the business domain. There is a number of standard
- * use-cases that are pre-implemented in this base class for convenience reasons.
+ * should reflect the all use cases for the business domain. There are a number of standard
+ * use-cases that are pre-implemented in this base class for your convenience.
  *
  * @author Michael Mayer <michael@liquidbytes.net>
  * @package Sympathy
@@ -50,11 +50,11 @@ abstract class Model {
         $daoName = empty($name) ? $this->_daoName : $name;
 
         if(empty($daoName)) {
-            throw new Exception ('Default DAO name was not set');
+            throw new Exception ('The DAO factory requires a DAO name');
         }
 
         if(empty($this->_db)) {
-            throw new Exception ('Database instance was not set');
+            throw new Exception ('Database instance is empty in DAO factory');
         }
 
         $className = $this->_daoFactoryNamespace . '\\' . $daoName  . $this->_daoFactoryPostfix;
@@ -87,11 +87,22 @@ abstract class Model {
     /**
      * Creates a new model instance
      *
-     * @param string $modelName
+     * @param string $name Optional model name (current model name if empty)
      * @param Dao $dao DB DAO instance
+     * @throws Exception
      * @return Model
      */
-    public function factory ($modelName, Dao $dao = null) {
+    public function factory ($name = '', Dao $dao = null) {
+        $modelName = empty($name) ? $this->getModelName() : $name;
+
+        if(empty($modelName)) {
+            throw new Exception ('The model factory requires a model name');
+        }
+
+        if(empty($this->_db)) {
+            throw new Exception ('Database instance is empty in model factory');
+        }
+
         $className = $this->_factoryNamespace . '\\' . $modelName . $this->_factoryPostfix;
 
         $model = new $className ($this->_db, $dao);
@@ -123,9 +134,23 @@ abstract class Model {
         }
 
         if($wrapResult) {
-            foreach ($result as &$row) {
-                $row = $this->factory($this->getModelName(), $row);
-            }
+            $result = $this->wrapAll($result);
+        }
+
+        return $result;
+    }
+
+    /**
+     * Wraps all DAO result entities in model instances
+     *
+     * @param array $result
+     * @return array
+     */
+    protected function wrapAll(array $result) {
+        $modelName = $this->getModelName();
+
+        foreach ($result as &$entity) {
+            $entity = $this->factory($modelName, $entity);
         }
 
         return $result;
@@ -150,10 +175,7 @@ abstract class Model {
         }
 
         if(!isset($options['ids_only']) || $options['ids_only'] == false) {
-            foreach ($result['rows'] as &$row) {
-                // Wrap search results in model instances
-                $row = $this->factory($this->getModelName(), $row);
-            }
+            $result['rows'] = $this->wrapAll($result['rows']);
         }
 
         return $result;
@@ -179,6 +201,28 @@ abstract class Model {
     }
 
     /**
+     * Search for a single row; throws an exception if 0 or more than 1 rows are found
+     *
+     * @param array $cond The search conditions as array
+     * @throws NotFoundException
+     * @return array
+     */
+    public function searchOne (array $cond = array()) {
+        $options = array(
+            'count' => 1,
+            'offset' => 0
+        );
+
+        $result = $this->search($cond, $options);
+
+        if($result['total'] != 1) {
+            throw new NotFoundException($result['total'] . ' matching items found');
+        }
+
+        return $result['rows'][0];
+    }
+
+    /**
      * Returns an array of matching primary keys for the given search condition
      *
      * @param array $cond
@@ -201,12 +245,12 @@ abstract class Model {
     }
 
     /**
-     * Returns the model name without Model_ prefix
+     * Returns the model name without prefix and postfix
      *
      * @return string
      */
     public function getModelName () {
-        $modelName = substr(get_class($this), 10);
+        $modelName = substr(get_class($this), strlen($this->_factoryNamespace) + 1, strlen($this->_factoryPostfix) * -1);
 
         return $modelName;
     }
@@ -238,12 +282,12 @@ abstract class Model {
     public function getValues () {
         return $this->getDao()->getValues();
     }
-    
+
     /**
      * Return the common name of this entity (for lists or box titles)
-     * 
+     *
      * Should be overwritten by inherited classes
-     * 
+     *
      * @return string
      */
     public function getEntityTitle () {
@@ -259,7 +303,7 @@ abstract class Model {
     public function isDeletable () {
         return true;
     }
-    
+
     /**
      * Update the data of multiple DAO instances
      *
@@ -310,7 +354,7 @@ abstract class Model {
     public function __get ($name) {
         return $this->getDao()->$name;
     }
-    
+
     /**
      * Magic setter
      *
@@ -335,12 +379,12 @@ abstract class Model {
         return $this->getDao()->hasTimestampEnabled();
     }
 
-    /**     
+    /**
      * Deletes the stored data without any checks
      */
     protected function _delete () {
         $dao = $this->getDao();
-        
+
         // Start the database transaction
         $dao->beginTransaction();
 
@@ -351,29 +395,29 @@ abstract class Model {
         } catch (Exception $e) {
             // Roll back in case of ANY error and throw exception
             $dao->rollBack();
-            
+
             throw $e;
         }
     }
-    
+
     /**
      * Permanently deletes the entity instance
-     * 
+     *
      * @throws DeleteException
      */
     public function delete () {
         if(!$this->hasId() || !$this->isDeletable()) {
             throw new DeleteException('Entity can not be deleted');
         }
-        
+
         $this->_delete();
         $this->resetDao();
-        return $this;        
+        return $this;
     }
-    
+
     /**
      * Permanently stores the entity
-     * 
+     *
      * @param Form $form
      * @throws InvalidFormException
      * @throws CreateException
@@ -384,13 +428,13 @@ abstract class Model {
         if($form->hasErrors()) {
             throw new InvalidFormException('Form passed to create() has errors');
         }
-        
+
         if(!method_exists($this, '_createFromForm')) {
             throw new CreateException('You need to implement _createFromForm($form) first');
         }
-        
+
         $dao = $this->getDao();
-       
+
         // Start the database transaction
         $dao->beginTransaction();
 
@@ -408,16 +452,16 @@ abstract class Model {
         } catch (Exception $e) {
             // Roll back in case of ANY error and throw exception
             $dao->rollBack();
-            
+
             throw $e;
         }
 
-        return $this;   
+        return $this;
     }
-    
+
     /**
      * Updates stored entity data
-     * 
+     *
      * @param Form $form
      * @throws InvalidFormException
      * @throws UpdateException
@@ -428,13 +472,13 @@ abstract class Model {
         if($form->hasErrors()) {
             throw new InvalidFormException('Form passed to update() has errors');
         }
-        
+
         if(!method_exists($this, '_updateFromForm')) {
-            throw new UpdateException('You need to implement _createFromForm($form) first');
+            throw new UpdateException('You need to implement _updateFromForm($form) first');
         }
-        
+
         $dao = $this->getDao();
-       
+
         // Start the database transaction
         $dao->beginTransaction();
 
@@ -445,17 +489,17 @@ abstract class Model {
              * protected function _updateFromForm (Form $form) {
              *     $this->getDao()->setValues($form->getValues())->update();
              * }
-             */            
+             */
             $this->_updateFromForm($form);
 
             $dao->commit();
         } catch (Exception $e) {
             // Roll back in case of ANY error and throw exception
             $dao->rollBack();
-            
+
             throw $e;
         }
 
-        return $this;   
+        return $this;
     }
 }

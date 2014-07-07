@@ -3,8 +3,8 @@
 namespace Sympathy\Db;
 
 use Doctrine\DBAL\Connection as Db;
-use Doctrine\DBAL\Query\QueryBuilder;
 use DateTime;
+use InvalidArgumentException;
 
 /**
  * Data Access Object for SQL database entities
@@ -125,7 +125,6 @@ abstract class Entity extends Dao
     public function setValues(array $data)
     {
         foreach ($data as $name => $value) {
-            $name = strtoupper($name); // For Oracle
             $this->$name = $value;
         }
     }
@@ -174,14 +173,23 @@ abstract class Entity extends Dao
      *
      * @param mixed $id Primary Key
      * @throws NotFoundException
+     * @throws InvalidArgumentException
      * @return $this
      */
     public function find($id)
     {
         $db = $this->getDb();
+        $alias = $this->getDefaultTableAlias();
+
         $select = $this->createQueryBuilder();
         $select->select('*');
-        $select->from($this->_tableName, 'a');
+        $select->from($this->_tableName, $alias);
+
+        if(is_array($this->_primaryKey) && count($this->_primaryKey) == 1) {
+            $primaryKey = $this->_primaryKey[0];
+        } else {
+            $primaryKey = $this->_primaryKey;
+        }
 
         if (is_array($id)) {
             foreach ($id as $key => $val) {
@@ -189,14 +197,16 @@ abstract class Entity extends Dao
                     $val = Format::toSql($this->_formatMap[$key], $val);
                 }
 
-                $select->where($db->quoteIdentifier($key) . ' = ' . $db->quote($val));
+                $select->andWhere($db->quoteIdentifier($key) . ' = ' . $db->quote($val));
             }
-        } else {
-            if (isset($this->_formatMap[$this->_primaryKey])) {
-                $id = Format::toSql($this->_formatMap[$this->_primaryKey], $id);
+        } elseif(!is_array($primaryKey)) {
+            if (isset($this->_formatMap[$primaryKey])) {
+                $id = Format::toSql($this->_formatMap[$primaryKey], $id);
             }
 
-            $select->where($db->quoteIdentifier($this->_primaryKey) . ' = ' . $db->quote($id));
+            $select->where($db->quoteIdentifier($primaryKey) . ' = ' . $db->quote($id));
+        } else {
+            throw new InvalidArgumentException ('$id must be an array for compound primary keys');
         }
 
         $data = $db->fetchAssoc($select);
@@ -218,6 +228,7 @@ abstract class Entity extends Dao
      */
     public function exists($id)
     {
+        $db = $this->getDb();
         $select = $this->createQueryBuilder();
         $select->from($this->_tableName, 'a');
 
@@ -227,14 +238,14 @@ abstract class Entity extends Dao
                     $val = Format::toSql($this->_formatMap[$key], $val);
                 }
 
-                $select->where($this->getDb()->quoteIdentifier($key) . ' = ?', $val);
+                $select->andWhere($this->getDb()->quoteIdentifier($key) . ' = ' . $db->quote($val));
             }
         } else {
             if (isset($this->_formatMap[$this->_primaryKey])) {
                 $id = Format::fromSql($this->_formatMap[$this->_primaryKey], $id);
             }
 
-            $select->where($this->getDb()->quoteIdentifier($this->_primaryKey) . ' = ?', $id);
+            $select->where($this->getDb()->quoteIdentifier($this->_primaryKey) . ' = ' . $db->quote($id));
         }
 
         $data = $this->getDb()->fetchAssoc($select);
@@ -302,7 +313,7 @@ abstract class Entity extends Dao
         $db->update(
             $this->_tableName,
             $fields,
-            $this->getWhere()
+            $this->getWhereAsArray()
         );
 
         // Update original data
@@ -321,7 +332,7 @@ abstract class Entity extends Dao
     {
         $db = $this->getDb();
 
-        return $db->delete($this->_tableName, $this->getWhere());
+        return $db->delete($this->_tableName, $this->getWhereAsArray());
     }
 
     /**
@@ -331,22 +342,45 @@ abstract class Entity extends Dao
      */
     protected function getWhere()
     {
+        $db = $this->getDb();
+
         if (is_array($this->_primaryKey)) {
             $list = array();
 
             foreach ($this->_primaryKey as $key) {
-                $list[] = $this->getDb()->quoteIdentifier(strtoupper($key))
-                    . ' = ' . $this->getDb()->quote($this->$key);
+                $list[] = $db->quoteIdentifier($key)
+                    . ' = ' . $db->quote($this->$key);
             }
 
             $where = implode(' AND ', $list);
         } else {
-            $where = $this->getDb()->quoteIdentifier(strtoupper($this->_primaryKey))
-                . ' = ' . $this->getDb()->quote($this->getId());
+            $where = $db->quoteIdentifier($this->_primaryKey)
+                . ' = ' . $db->quote($this->getId());
         }
 
         return $where;
     }
+
+    /**
+     * Returns where party of query as array for Doctrine update()
+     *
+     * @return array
+     */
+    protected function getWhereAsArray()
+    {
+        $where = array();
+
+        if (is_array($this->_primaryKey)) {
+            foreach ($this->_primaryKey as $key) {
+                $where[$key] = $this->$key;
+            }
+        } else {
+            $where[$this->_primaryKey] = $this->getId();
+        }
+
+        return $where;
+    }
+
 
     /**
      * Returns the primary key (or an exception, if it was not set yet)
@@ -428,7 +462,11 @@ abstract class Entity extends Dao
     public function findAll(array $cond = array(), $wrapResult = true)
     {
         $select = $this->createQueryBuilder();
-        $select->from($this->_tableName, 'a');
+        $alias = $this->getDefaultTableAlias();
+
+        $db = $this->getDb();
+        $select->from($this->_tableName, $alias);
+        $select->select('*');
 
         foreach ($cond as $key => $val) {
             if (is_numeric($key) && is_scalar($val) && $val !== NULL) {
@@ -436,25 +474,25 @@ abstract class Entity extends Dao
                     $val = Format::fromSql($this->_formatMap[$this->_primaryKey], $val);
                 }
 
-                $select->orWhere($this->getDb()->quoteIdentifier($this->_primaryKey) . ' = ?', $val);
+                $select->orWhere($db->quoteIdentifier($this->_primaryKey) . ' = ' . $db->quote($val));
             } elseif (is_int($key) && is_object($val)) {
-                $select->where((string)$val);
+                $select->andWhere((string)$val);
             } elseif (is_int($key) && is_array($val)) {
-                $select->where($this->getDb()->quoteIdentifier($this->_primaryKey) . ' IN (?)', $val);
+                $select->andWhere($db->quoteIdentifier($this->_primaryKey) . ' IN (' . $this->sqlImplode($val) . ')');
             } elseif (is_string($key) && is_array($val) && count($val) > 0) {
-                $select->where($this->getDb()->quoteIdentifier($key) . ' IN (?)', $val);
+                $select->andWhere($db->quoteIdentifier($key) . ' IN (' . $this->sqlImplode($val) . ')');
             } elseif (is_string($key) && $val === NULL) {
-                $select->where($this->getDb()->quoteIdentifier($key) . ' IS NULL');
+                $select->andWhere($db->quoteIdentifier($key) . ' IS NULL');
             } else {
                 if (isset($this->_formatMap[$key])) {
                     $val = Format::fromSql($this->_formatMap[$key], $val);
                 }
 
-                $select->where($this->getDb()->quoteIdentifier($key) . ' = ?', $val);
+                $select->andWhere($db->quoteIdentifier($key) . ' = ' . $db->quote($val));
             }
         }
 
-        $rows = $this->getDb()->fetchAll($select);
+        $rows = $db->fetchAll($select);
 
         if ($wrapResult) {
             return $this->wrapAll($rows);
@@ -487,6 +525,18 @@ abstract class Entity extends Dao
     }
 
     /**
+     * @param string $tableName Optional table name (if different from the default)
+     * @return string The default table alias (first character of the table name)
+     */
+    protected function getDefaultTableAlias ($tableName = '') {
+        if($tableName == '') {
+            $tableName = $this->_tableName;
+        }
+
+        return substr($tableName, 0, 1);
+    }
+
+    /**
      * More powerful alternative to findAll() to search the database incl. count, offset, order etc.
      *
      * @param array $params The search parameter (see beginning of function for supported options)
@@ -514,32 +564,34 @@ abstract class Entity extends Dao
 
         $params = array_merge($defaults, $params);
 
-        // Optional SQL filter table alias canonization (default value and always big letters)
+        // Optional SQL filter table alias canonization
         if (empty($params['table_alias'])) {
-            $params['table_alias'] = 'A';
+            $params['table_alias'] = $this->getDefaultTableAlias($params['table']);
         }
 
+        $db = $this->getDb();
         $select = $this->createQueryBuilder();
 
         // Build WHERE conditions
         foreach ($params['cond'] as $key => $val) {
             if (is_int($key)) {
-                $select->where($val);
+                $select->andWhere($val);
             } elseif (is_array($val) && count($val) > 0) {
-                $select->where($this->getQuotedKey($key, $params['table_alias']) . ' IN (?)', $val);
+                $select->andWhere($this->getQuotedKey($key, $params['table_alias']) . ' IN (' . $this->sqlImplode($val) . ')');
             } elseif (!is_array($val) && $val !== '' && $val !== null) {
                 if (is_bool($val)) {
                     $val = (int)$val;
                 }
 
-                $select->where($this->getQuotedKey($key, $params['table_alias']) . ' = ?', $val);
+                $select->andWhere($this->getQuotedKey($key, $params['table_alias']) . ' = ' . $db->quote($val));
             }
         }
 
         // Check for optional ID filters (sets; pre-defined result lists)
         if (count($params['id_filter']) > 0) {
-            $select->where($this->getQuotedKey($this->_primaryKey, $params['table_alias'])
-                . ' IN (?)', $params['id_filter']);
+            $select->andWhere($this->getQuotedKey($this->_primaryKey, $params['table_alias'])
+                . ' IN ('. $this->sqlImplode($params['id_filter']) .')');
+            //$select->setParameter(':id_filter', $params['id_filter']);
         }
 
         // Optional grouping
@@ -557,48 +609,54 @@ abstract class Entity extends Dao
 
                 $select->addSelect($col);
             }
+        } else {
+            $select->addSelect($params['table_alias'] . '.*');
         }
 
         // Optional join
         if ($params['join'] && is_array($params['join'])) {
             foreach ($params['join'] as $join) {
-                $joinCond = str_replace($this->_tableName . '.', $params['table_alias'] . '.', $join[1]);
-                $countSelect->join($join[0], $joinCond, array());
-                $joinCols = isset($join[2]) && !$params['ids_only'] ? $join[2] : array();
-                $select->join($join[0], $joinCond, $joinCols);
+                $countSelect->join($join[0], $join[1], $join[2], $join[3]);
+
+                $select->join($join[0], $join[1], $join[2], $join[3]);
+
+                if(!$params['ids_only'] && isset($join[4])) {
+                    $select->addSelect($join[4]);
+                }
             }
         }
 
         if ($params['left_join'] && is_array($params['left_join'])) {
             foreach ($params['left_join'] as $join) {
-                $joinCond = str_replace($this->_tableName . '.', $params['table_alias'] . '.', $join[1]);
-                $countSelect->leftJoin($join[0], $joinCond, array());
-                $joinCols = isset($join[2]) && !$params['ids_only'] ? $join[2] : array();
-                $select->leftJoin($join[0], $joinCond, $joinCols);
+                $countSelect->leftJoin($join[0], $join[1], $join[2], $join[3]);
+
+                $select->leftJoin($join[0], $join[1], $join[2], $join[3]);
+
+                if(!$params['ids_only'] && isset($join[4])) {
+                    $select->addSelect($join[4]);
+                }
             }
         }
 
         if ($params['ids_only']) {
             $select->select(array('id' => $this->_primaryKey));
-            // Speical "ids_only" mode to fetch primary key only
-            $select->from($params['table'], $params['table_alias']);
-        } else {
-            // Default: Query all columns
-            $select->from($params['table'], $params['table_alias']);
         }
+
+        $select->from($params['table'], $params['table_alias']);
 
         $filterSelect = clone $select;
 
         // Check for optional SQL filters
         if ($params['sql_filter'] != '') {
-            $select->where($params['sql_filter']);
-            $countSelect->where($params['sql_filter']);
+            $select->andWhere($params['sql_filter']);
+            $countSelect->andWhere($params['sql_filter']);
         }
 
         if ($params['count']) {
             $select->setMaxResults($params['count'])->setFirstResult($params['offset']);
 
-            $countSelect->from(array($params['table_alias'] => $params['table']), array('count' => 'COUNT(*)'));
+            $countSelect->from($params['table'], $params['table_alias']);
+            $countSelect->select(array('COUNT(*) AS count'));
 
             $count = $this->fetchOne($countSelect);
         }
@@ -606,9 +664,11 @@ abstract class Entity extends Dao
         // Optional ordering of results
         if ($params['order']) {
             if (is_array($params['order'])) {
-                $select->orderBy($params['order']);
+                foreach($params['order'] as $sortOrder) {
+                    $select->addOrderBy($this->getOrderField($sortOrder), $this->getOrderDirection($sortOrder));
+                }
             } else {
-                $select->orderBy($this->composeOrderArgument($params['order']));
+                $select->addOrderBy($this->getOrderField($params['order']), $this->getOrderDirection($params['order']));
             }
         }
 
@@ -747,6 +807,25 @@ abstract class Entity extends Dao
         return $order;
     }
 
+    protected function getOrderDirection ($sortOrder) {
+        $parts = explode(' ', $sortOrder);
+
+        if(count($parts) == 2 && strtoupper($parts[1]) == 'DESC') {
+            $result = 'DESC';
+        } else {
+            $result = 'ASC';
+        }
+
+        return $result;
+    }
+
+    protected function getOrderField ($sortOrder) {
+        $parts = explode(' ', $sortOrder);
+        $result = $parts[0];
+
+        return $result;
+    }
+
     /**
      * Creates SQL needed to search multiple db fields for a certain string incl. automatic wildcards before and after
      *
@@ -760,7 +839,7 @@ abstract class Entity extends Dao
 
         foreach ($keys AS $key) {
             $result[] = 'UPPER(' . $this->getDb()->quoteIdentifier($key) . ') LIKE UPPER('
-                . str_replace('*', '%', $this->getDb()->quote('%' . $value . '%')) . ')';
+                . $this->getDb()->quote(str_replace('*', '%', '%' . $value . '%')) . ')';
         }
 
         return '(' . implode(' OR ', $result) . ')';
@@ -804,9 +883,8 @@ abstract class Entity extends Dao
 
         foreach ($existing as $id) {
             if (!in_array($id, $updated)) {
-                $where = $db->quoteIdentifier($primaryKeyName) . ' = ' . $db->quote($this->getId());
-                $where .= ' AND ' . $db->quoteIdentifier($foreignKeyName) . ' = ' . $db->quote($id);
-                $this->getDb()->delete($relationTable, $where);
+                $whereArray = array($primaryKeyName => $this->getId(), $foreignKeyName => $id);
+                $this->getDb()->delete($relationTable, $whereArray);
             }
         }
     }
@@ -827,14 +905,19 @@ abstract class Entity extends Dao
      * @param string $colName The value column name
      * @param string $order The sort order
      * @param string $where An optional filter (raw SQL)
+     * @param string $indexName Optional key name (default is the primary key)
      * @return array
      */
-    public function findList($colName, $order = '', $where = '')
+    public function findList($colName, $order = '', $where = '', $indexName = '')
     {
         $db = $this->getDb();
 
+        if(!$indexName) {
+            $indexName = $this->_primaryKey;
+        }
+
         $select = $this->createQueryBuilder();
-        $select->select(array($this->_primaryKey, $colName));
+        $select->select(array($indexName, $colName));
 
         $select->from($this->_tableName, 'a');
 
@@ -843,14 +926,14 @@ abstract class Entity extends Dao
         }
 
         if ($order) {
-            $select->orderBy($order);
+            $select->orderBy($this->getOrderField($order), $this->getOrderDirection($order));
         }
 
         $result = array();
         $rows = $db->fetchAll($select);
 
         foreach ($rows as $row) {
-            $result[$row[$this->_primaryKey]] = $result[$colName];
+            $result[$row[$indexName]] = $row[$colName];
         }
 
         return $result;
@@ -932,7 +1015,6 @@ abstract class Entity extends Dao
     protected function columnIsRequired(array $searchParams, $column)
     {
         $result = false;
-        $column = strtoupper($column);
 
         if (empty($searchParams['columns']) || in_array($column, $searchParams['columns'])) {
             return true;
@@ -948,7 +1030,7 @@ abstract class Entity extends Dao
             foreach ($order as $orderCol) {
                 // Postfix of $orderCol can be the sorting direction (ASC/DESC)
                 $parts = explode(' ', $orderCol);
-                if ($column == strtoupper($parts[0])) {
+                if ($column == $parts[0]) {
                     $result = true;
                 }
             }

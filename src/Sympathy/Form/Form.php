@@ -58,7 +58,8 @@ class Form
     private $_groups = array(); // Optional form element groups
     private $_options = null;
 
-    protected $_factoryClassPrefix = '';
+    protected $_factoryPrefix = '';
+    protected $_factoryPostfix = '';
     protected $_validationDone = false; // Set to true, if the validation was executed
 
     protected $_translator = null;
@@ -98,16 +99,21 @@ class Form
      */
     public function factory($className, array $params = array())
     {
-        $className = $this->_factoryClassPrefix . $className;
+        $className = $this->_factoryPrefix . '\\' .$className . $this->_factoryPostfix;
 
         $result = new $className ($this->getTranslator(), $this->getValidator(), $params);
 
         return $result;
     }
 
-    public function setFactoryClassPrefix($prefix)
+    public function setFactoryPrefix($prefix)
     {
-        $this->_factoryClassPrefix = $prefix;
+        $this->_factoryPrefix = $prefix;
+    }
+
+    public function setFactoryPostfix($postfix)
+    {
+        $this->_factoryPostfix = $postfix;
     }
 
     /**
