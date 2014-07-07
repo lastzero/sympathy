@@ -19,7 +19,8 @@
         "symfony/translation": "~2.3",
         "symfony/validator": "~2.3",
         "lastzero/test-tools": "dev-master",
-        "natxet/CssMin": "dev-master"
+        "natxet/CssMin": "dev-master",
+        "silex/silex": "~1.2"
     },
     "require-dev": {
         "kriswallsmith/assetic": "~1.1"

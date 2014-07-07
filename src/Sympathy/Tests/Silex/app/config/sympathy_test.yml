@@ -1,0 +1,6 @@
+parameters:
+    twig.path:
+        - 'foo/bar'
+    twig.options:
+        cache: %kernel.cache_dir%
+        auto_reload: true
