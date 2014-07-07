@@ -25,7 +25,7 @@ class KernelTest extends UnitTestCase
     public function testGetName()
     {
         $result = $this->app->getName();
-        $this->assertEquals('Silex', $result);
+        $this->assertEquals('Kernel', $result);
     }
 
     public function testGetVersion()

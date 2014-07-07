@@ -75,24 +75,24 @@ class Kernel
 
     public function getLogDir()
     {
-        return $this->rootDir . '/var/log';
+        return $this->rootDir . '/logs';
     }
 
     public function getConfigDir()
     {
-        return $this->rootDir . '/app/config';
+        return $this->rootDir . '/config';
     }
 
     public function getCacheDir()
     {
-        return $this->rootDir . '/var/cache';
+        return $this->rootDir . '/cache';
     }
 
     public function getRootDir()
     {
         if (null === $this->rootDir) {
             $r = new \ReflectionObject($this);
-            $this->rootDir = realpath(str_replace('\\', '/', dirname($r->getFileName())) . '/..');
+            $this->rootDir = str_replace('\\', '/', dirname($r->getFileName()));
         }
 
         return $this->rootDir;
