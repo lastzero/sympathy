@@ -1,9 +1,9 @@
 <?php
 
-namespace Sympathy\Tests\Silex;
+namespace Sympathy\Tests\Bootstrap;
 
 use TestTools\TestCase\UnitTestCase;
-use Sympathy\Tests\Silex\App\App;
+use Sympathy\Tests\Bootstrap\App\App;
 
 /**
  * @author Michael Mayer <michael@liquidbytes.net>

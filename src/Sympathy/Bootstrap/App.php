@@ -1,6 +1,6 @@
 <?php
 
-namespace Sympathy\Silex;
+namespace Sympathy\Bootstrap;
 
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
