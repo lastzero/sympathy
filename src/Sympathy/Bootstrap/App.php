@@ -11,16 +11,16 @@ class App
 {
     protected $environment;
     protected $container;
-    protected $rootDir;
+    protected $appPath;
     protected $debug;
     protected $name;
     protected $version = '1.0';
 
-    public function __construct($rootDirectory = '', $environment = 'dev', $debug = false)
+    public function __construct($environment = 'dev', $appPath = '', $debug = false)
     {
         $this->environment = $environment;
         $this->debug = $debug;
-        $this->rootDir = $rootDirectory;
+        $this->appPath = $appPath;
 
         $this->boot();
     }
@@ -42,7 +42,7 @@ class App
     public function getName()
     {
         if (null === $this->name) {
-            $this->name = ucfirst(preg_replace('/[^a-zA-Z0-9_]+/', '', basename($this->getRootDir())));
+            $this->name = ucfirst(preg_replace('/[^a-zA-Z0-9_]+/', '', basename($this->getAppPath())));
         }
 
         return $this->name;
@@ -73,29 +73,29 @@ class App
         return 'UTF-8';
     }
 
-    public function getLogDir()
+    public function getLogPath()
     {
-        return realpath($this->rootDir . '/../var/log');
+        return realpath($this->appPath . '/../var/log');
     }
 
-    public function getConfigDir()
+    public function getConfigPath()
     {
-        return $this->rootDir . '/config';
+        return $this->appPath . '/config';
     }
 
-    public function getCacheDir()
+    public function getCachePath()
     {
-        return realpath($this->rootDir . '/../var/cache');
+        return realpath($this->appPath . '/../var/cache');
     }
 
-    public function getRootDir()
+    public function getAppPath()
     {
-        if ($this->rootDir == '') {
+        if ($this->appPath == '') {
             $r = new \ReflectionObject($this);
-            $this->rootDir = str_replace('\\', '/', dirname($r->getFileName()));
+            $this->appPath = str_replace('\\', '/', dirname($r->getFileName()));
         }
 
-        return $this->rootDir;
+        return $this->appPath;
     }
 
     public function getKernelParameters()
@@ -106,25 +106,25 @@ class App
             'app.environment' => $this->environment,
             'app.debug' => $this->debug,
             'app.charset' => $this->getCharset(),
-            'app.root_dir' => $this->getRootDir(),
-            'app.cache_dir' => $this->getCacheDir(),
-            'app.log_dir' => $this->getLogDir(),
-            'app.config_dir' => $this->getConfigDir(),
+            'app.path' => $this->getAppPath(),
+            'app.cache_path' => $this->getCachePath(),
+            'app.log_path' => $this->getLogPath(),
+            'app.config_path' => $this->getConfigPath(),
         );
     }
 
     public function loadContainerConfiguration()
     {
-        $configDir = $this->getConfigDir();
+        $configPath = $this->getConfigPath();
         $environment=  $this->getEnvironment();
 
-        $loader = new YamlFileLoader($this->container, new FileLocator($configDir));
+        $loader = new YamlFileLoader($this->container, new FileLocator($configPath));
 
-        if (file_exists($configDir . '/' . $environment . '.yml')) {
+        if (file_exists($configPath . '/' . $environment . '.yml')) {
             $loader->load($environment . '.yml');
         }
 
-        if (file_exists($configDir . '/' . $environment . '.local.yml')) {
+        if (file_exists($configPath . '/' . $environment . '.local.yml')) {
             $loader->load($environment . '.local.yml');
         }
     }

@@ -19,7 +19,7 @@ class AppTest extends UnitTestCase
 
     public function setUp()
     {
-        $this->app = new App(__DIR__ . '/App', 'sympathy_test');
+        $this->app = new App('sympathy_test', __DIR__ . '/App', false);
     }
 
     public function testGetName()
@@ -55,9 +55,9 @@ class AppTest extends UnitTestCase
         $this->assertArrayHasKey('app.environment', $result);
         $this->assertArrayHasKey('app.debug', $result);
         $this->assertArrayHasKey('app.charset', $result);
-        $this->assertArrayHasKey('app.root_dir', $result);
-        $this->assertArrayHasKey('app.cache_dir', $result);
-        $this->assertArrayHasKey('app.log_dir', $result);
-        $this->assertArrayHasKey('app.config_dir', $result);
+        $this->assertArrayHasKey('app.path', $result);
+        $this->assertArrayHasKey('app.cache_path', $result);
+        $this->assertArrayHasKey('app.log_path', $result);
+        $this->assertArrayHasKey('app.config_path', $result);
     }
 }
