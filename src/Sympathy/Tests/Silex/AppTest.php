@@ -10,7 +10,7 @@ use Sympathy\Tests\Silex\App\App;
  * @package Sympathy
  * @license MIT
  */
-class KernelTest extends UnitTestCase
+class AppTest extends UnitTestCase
 {
     /**
      * @var App
