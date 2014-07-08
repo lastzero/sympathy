@@ -34,8 +34,13 @@ class App
 
     /**
      * @return ContainerBuilder
+     * @throws Exception
      */
     public function getContainer () {
+        if(!$this->container) {
+            throw new Exception ('Container not set - maybe boot() was not executed?');
+        }
+
         return $this->container;
     }
 
@@ -131,7 +136,7 @@ class App
 
     public function getApplication()
     {
-        return $this->getContainer()->get('application');
+        return $this->getContainer()->get('app');
     }
 
     public function run()
