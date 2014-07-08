@@ -46,9 +46,9 @@ class AppTest extends UnitTestCase
         $this->assertEquals('UTF-8', $result);
     }
 
-    public function testGetKernelParameters()
+    public function testGetAppParameters()
     {
-        $result = $this->app->getKernelParameters();
+        $result = $this->app->getAppParameters();
         $this->assertInternalType('array', $result);
         $this->assertArrayHasKey('app.name', $result);
         $this->assertArrayHasKey('app.version', $result);

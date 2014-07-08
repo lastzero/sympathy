@@ -27,7 +27,7 @@ class App
 
     protected function boot()
     {
-        $this->container = new ContainerBuilder(new ParameterBag($this->getKernelParameters()));
+        $this->container = new ContainerBuilder(new ParameterBag($this->getAppParameters()));
 
         $this->loadContainerConfiguration();
     }
@@ -103,7 +103,7 @@ class App
         return $this->appPath;
     }
 
-    public function getKernelParameters()
+    public function getAppParameters()
     {
         return array(
             'app.name' => $this->getName(),
