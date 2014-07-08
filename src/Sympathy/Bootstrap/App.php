@@ -16,10 +16,11 @@ class App
     protected $name;
     protected $version = '1.0';
 
-    public function __construct($environment, $debug = false)
+    public function __construct($rootDirectory = '', $environment = 'dev', $debug = false)
     {
         $this->environment = $environment;
         $this->debug = $debug;
+        $this->rootDir = $rootDirectory;
 
         $this->boot();
     }
@@ -89,7 +90,7 @@ class App
 
     public function getRootDir()
     {
-        if (null === $this->rootDir) {
+        if ($this->rootDir == '') {
             $r = new \ReflectionObject($this);
             $this->rootDir = str_replace('\\', '/', dirname($r->getFileName()));
         }
@@ -128,8 +129,13 @@ class App
         }
     }
 
+    public function getApplication()
+    {
+        return $this->getContainer()->get('application');
+    }
+
     public function run()
     {
-        $this->getContainer()->get('application')->run();
+        return $this->getApplication()->run();
     }
 }
