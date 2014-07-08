@@ -2,13 +2,12 @@
 
 namespace Sympathy\Silex;
 
-use Silex\Application as SilexApplication;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBag;
 
-class Kernel
+class App
 {
     protected $environment;
     protected $container;
@@ -75,7 +74,7 @@ class Kernel
 
     public function getLogDir()
     {
-        return $this->rootDir . '/logs';
+        return realpath($this->rootDir . '/../var/log');
     }
 
     public function getConfigDir()
@@ -85,7 +84,7 @@ class Kernel
 
     public function getCacheDir()
     {
-        return $this->rootDir . '/cache';
+        return realpath($this->rootDir . '/../var/cache');
     }
 
     public function getRootDir()
@@ -101,15 +100,15 @@ class Kernel
     public function getKernelParameters()
     {
         return array(
-            'kernel.name' => $this->getName(),
-            'kernel.version' => $this->getVersion(),
-            'kernel.environment' => $this->environment,
-            'kernel.debug' => $this->debug,
-            'kernel.charset' => $this->getCharset(),
-            'kernel.root_dir' => $this->getRootDir(),
-            'kernel.cache_dir' => $this->getCacheDir(),
-            'kernel.logs_dir' => $this->getLogDir(),
-            'kernel.config_dir' => $this->getConfigDir(),
+            'app.name' => $this->getName(),
+            'app.version' => $this->getVersion(),
+            'app.environment' => $this->environment,
+            'app.debug' => $this->debug,
+            'app.charset' => $this->getCharset(),
+            'app.root_dir' => $this->getRootDir(),
+            'app.cache_dir' => $this->getCacheDir(),
+            'app.log_dir' => $this->getLogDir(),
+            'app.config_dir' => $this->getConfigDir(),
         );
     }
 

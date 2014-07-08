@@ -3,7 +3,7 @@
 namespace Sympathy\Tests\Silex;
 
 use TestTools\TestCase\UnitTestCase;
-use Sympathy\Tests\Silex\Kernel\AppKernel;
+use Sympathy\Tests\Silex\App\App;
 
 /**
  * @author Michael Mayer <michael@liquidbytes.net>
@@ -13,19 +13,19 @@ use Sympathy\Tests\Silex\Kernel\AppKernel;
 class KernelTest extends UnitTestCase
 {
     /**
-     * @var AppKernel
+     * @var App
      */
     protected $app;
 
     public function setUp()
     {
-        $this->app = new AppKernel('sympathy_test');
+        $this->app = new App('sympathy_test');
     }
 
     public function testGetName()
     {
         $result = $this->app->getName();
-        $this->assertEquals('Kernel', $result);
+        $this->assertEquals('App', $result);
     }
 
     public function testGetVersion()
@@ -50,14 +50,14 @@ class KernelTest extends UnitTestCase
     {
         $result = $this->app->getKernelParameters();
         $this->assertInternalType('array', $result);
-        $this->assertArrayHasKey('kernel.name', $result);
-        $this->assertArrayHasKey('kernel.version', $result);
-        $this->assertArrayHasKey('kernel.environment', $result);
-        $this->assertArrayHasKey('kernel.debug', $result);
-        $this->assertArrayHasKey('kernel.charset', $result);
-        $this->assertArrayHasKey('kernel.root_dir', $result);
-        $this->assertArrayHasKey('kernel.cache_dir', $result);
-        $this->assertArrayHasKey('kernel.logs_dir', $result);
-        $this->assertArrayHasKey('kernel.config_dir', $result);
+        $this->assertArrayHasKey('app.name', $result);
+        $this->assertArrayHasKey('app.version', $result);
+        $this->assertArrayHasKey('app.environment', $result);
+        $this->assertArrayHasKey('app.debug', $result);
+        $this->assertArrayHasKey('app.charset', $result);
+        $this->assertArrayHasKey('app.root_dir', $result);
+        $this->assertArrayHasKey('app.cache_dir', $result);
+        $this->assertArrayHasKey('app.log_dir', $result);
+        $this->assertArrayHasKey('app.config_dir', $result);
     }
 }
