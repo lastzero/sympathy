@@ -60,4 +60,11 @@ class AppTest extends UnitTestCase
         $this->assertArrayHasKey('app.log_path', $result);
         $this->assertArrayHasKey('app.config_path', $result);
     }
+
+    public function testGetContainer()
+    {
+        $result = $this->app->getContainer();
+
+        $this->assertInstanceOf('\Symfony\Component\DependencyInjection\Container', $result);
+    }
 }

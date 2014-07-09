@@ -48,3 +48,18 @@ services:
         calls:
             - [setFixturePrefix, ['sql']]
             - [useFixtures, ["%fixture.path%"]]
+
+    app:
+        class: Silex\Application
+
+    router.rest:
+        class: Sympathy\Silex\Router\Rest
+        arguments: [ @app, @service_container ]
+
+    router.web:
+        class: Sympathy\Silex\Router\Web
+        arguments: [ @app, @service_container ]
+
+    router.error:
+        class: Sympathy\Silex\Router\Error
+        arguments: [ @app, @service_container ]

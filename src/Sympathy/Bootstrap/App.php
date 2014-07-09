@@ -3,6 +3,7 @@
 namespace Sympathy\Bootstrap;
 
 use Symfony\Component\Config\FileLocator;
+use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBag;
@@ -33,7 +34,7 @@ class App
     }
 
     /**
-     * @return ContainerBuilder
+     * @return Container
      * @throws Exception
      */
     public function getContainer () {
@@ -118,7 +119,7 @@ class App
         );
     }
 
-    public function loadContainerConfiguration()
+    protected function loadContainerConfiguration()
     {
         $configPath = $this->getConfigPath();
         $environment=  $this->getEnvironment();
