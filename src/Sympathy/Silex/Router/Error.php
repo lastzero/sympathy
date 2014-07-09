@@ -34,7 +34,7 @@ class Error extends Router
 
             $controller = $container->get($errorWebControllerService);
 
-            return $controller->serrorAction($e, $code);
+            return $controller->errorAction($e, $code);
         });
     }
 }

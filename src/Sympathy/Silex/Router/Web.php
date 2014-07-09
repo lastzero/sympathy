@@ -3,12 +3,13 @@
 namespace Sympathy\Silex\Router;
 
 use Symfony\Component\HttpFoundation\Request;
+use Twig_Environment;
 
 class Web extends Router
 {
     protected $twig;
 
-    public function setTwigInstance ($twig) {
+    public function setTwig (Twig_Environment $twig) {
         $this->twig = $twig;
     }
 
@@ -68,7 +69,11 @@ class Web extends Router
             return $result;
         };
 
-        $app->get($routePrefix . '/', $servicePrefix . 'index' . $servicePostfix . ':indexAction'); // TODO
+        $indexRequestHandler = function (Request $request) use ($app, $container, $servicePrefix, $servicePostfix, $webRequestHandler) {
+            return $webRequestHandler('index', $request, 'index');
+        };
+
+        $app->get($routePrefix . '/', $indexRequestHandler);
         $app->match($routePrefix . '/{controller}', $webRequestHandler);
         $app->match($routePrefix . '/{controller}/{action}', $webRequestHandler)->assert('action', '.+');
     }
