@@ -29,11 +29,13 @@ class ErrorRouter
     protected function isJsonRequest (Request $request) {
         $result = false;
 
-        if(strpos($request->headers->get('Accept'), 'application/json' !== false)) {
+        $headers = $request->headers;
+
+        if(strpos($headers->get('Accept'), 'application/json') !== false) {
             $result = true;
         }
 
-        if(strpos($request->headers->get('Content-Type'), 'application/json' !== false)) {
+        if(strpos($headers->get('Content-Type'), 'application/json') !== false) {
             $result = true;
         }
 
