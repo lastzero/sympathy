@@ -4,7 +4,7 @@ namespace Sympathy\Silex\Router;
 
 use Symfony\Component\HttpFoundation\Request;
 
-class Rest extends Router
+class RestRouter extends Router
 {
     public function route($routePrefix = '/api', $servicePrefix = 'controller.rest.', $servicePostfix = '')
     {
@@ -45,11 +45,7 @@ class Rest extends Router
 
             $controllerService = $servicePrefix . strtolower($controller) . $servicePostfix;
 
-            try{
-                $controllerInstance = $container->get($controllerService);
-            } catch (\Exception $e) {
-                throw new NotFoundException ('API controller service not found: ' . $controllerService);
-            }
+            $controllerInstance = $this->getController($controllerService);
 
             if (!method_exists($controllerInstance, $actionName)) {
                 throw new NotFoundException ('API controller method not found: ' . $actionName);
@@ -57,7 +53,13 @@ class Rest extends Router
 
             $result = call_user_func_array(array($controllerInstance, $actionName), $params);
 
-            return $app->json($result);
+            if(!$result) {
+                $httpCode = 204;
+            } else {
+                $httpCode = 200;
+            }
+
+            return $app->json($result, $httpCode);
         };
 
         $app->match($routePrefix . '/{path}', $handler)->assert('path', '.+');

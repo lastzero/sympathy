@@ -3,17 +3,17 @@
 namespace Sympathy\Tests\Silex\Router;
 
 use TestTools\TestCase\UnitTestCase;
-use Sympathy\Silex\Router\Rest;
+use Sympathy\Silex\Router\RestRouter;
 
 /**
  * @author Michael Mayer <michael@liquidbytes.net>
  * @package Sympathy
  * @license MIT
  */
-class RestTest extends UnitTestCase
+class RestRouterTest extends UnitTestCase
 {
     /**
-     * @var Rest
+     * @var RestRouter
      */
     protected $router;
 

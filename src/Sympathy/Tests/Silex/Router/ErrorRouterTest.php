@@ -3,17 +3,17 @@
 namespace Sympathy\Tests\Silex\Router;
 
 use TestTools\TestCase\UnitTestCase;
-use Sympathy\Silex\Router\Error;
+use Sympathy\Silex\Router\ErrorRouter;
 
 /**
  * @author Michael Mayer <michael@liquidbytes.net>
  * @package Sympathy
  * @license MIT
  */
-class ErrorTest extends UnitTestCase
+class ErrorRouterTest extends UnitTestCase
 {
     /**
-     * @var Error
+     * @var ErrorRouter
      */
     protected $router;
 

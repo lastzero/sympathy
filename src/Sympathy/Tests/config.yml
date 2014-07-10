@@ -8,6 +8,33 @@ parameters:
         user:           sympathy
         password:       sympathy
 
+    exception.codes:
+        InvalidArgumentException: 400
+        Exception\NotFoundException: 404
+        Exception: 500
+
+    exception.messages:
+        400: 'Bad request'
+        401: 'Unauthorized'
+        402: 'Payment Required'
+        403: 'Forbidden'
+        404: 'Not Found'
+        405: 'Method Not Allowed'
+        406: 'Not Acceptable'
+        407: 'Proxy Authentication Required'
+        408: 'Request Timeout'
+        409: 'Conflict'
+        410: 'Gone'
+        500: 'Looks like something went wrong!'
+
+    twig.path: '%base.path%/Tests/_files/'
+    twig.options:
+        charset: 'UTF-8'
+        debug: true
+        strict_variables: false
+        auto_reload: true
+
+
 services:
     message_selector:
         class: \Symfony\Component\Translation\MessageSelector
@@ -52,14 +79,22 @@ services:
     app:
         class: Silex\Application
 
+    twig.loader:
+        class: Twig_Loader_Filesystem
+        arguments: [ %twig.path% ]
+
+    twig:
+        class: Twig_Environment
+        arguments: [ @twig.loader, %twig.options% ]
+
     router.rest:
-        class: Sympathy\Silex\Router\Rest
+        class: Sympathy\Silex\Router\RestRouter
         arguments: [ @app, @service_container ]
 
-    router.web:
-        class: Sympathy\Silex\Router\Web
-        arguments: [ @app, @service_container ]
+    router.twig:
+        class: Sympathy\Silex\Router\TwigRouter
+        arguments: [ @app, @service_container, @twig ]
 
     router.error:
-        class: Sympathy\Silex\Router\Error
-        arguments: [ @app, @service_container ]
+        class: Sympathy\Silex\Router\ErrorRouter
+        arguments: [ @app, @twig, %exception.codes%, %exception.messages%, true ]

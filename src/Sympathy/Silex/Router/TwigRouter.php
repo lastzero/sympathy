@@ -3,13 +3,18 @@
 namespace Sympathy\Silex\Router;
 
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Silex\Application;
+use Symfony\Component\DependencyInjection\Container;
 use Twig_Environment;
 
-class Web extends Router
+class TwigRouter extends Router
 {
     protected $twig;
 
-    public function setTwig (Twig_Environment $twig) {
+    public function __construct(Application $app, Container $container, Twig_Environment $twig)
+    {
+        parent::__construct($app, $container);
         $this->twig = $twig;
     }
 
@@ -45,11 +50,7 @@ class Web extends Router
 
             $controllerService = $servicePrefix . strtolower($controller) . $servicePostfix;
 
-            try{
-                $controllerInstance = $container->get($controllerService);
-            } catch (\Exception $e) {
-                throw new NotFoundException ('Web controller service not found: ' . $controllerService);
-            }
+            $controllerInstance = $this->getController($controllerService);
 
             if ($prefix == 'get' && !method_exists($controllerInstance, $actionName)) {
                 $actionName = $subResources . 'Action';
@@ -59,14 +60,14 @@ class Web extends Router
                 throw new NotFoundException ('Web controller method not found: ' . $actionName);
             }
 
-            if($this->twig) {
-                $this->twig->addGlobal('controller', $controller);
-                $this->twig->addGlobal('action', $subResources);
-            }
+            $this->twig->addGlobal('controller', $controller);
+            $this->twig->addGlobal('action', $subResources);
 
             $result = call_user_func_array(array($controllerInstance, $actionName), $params);
 
-            return $result;
+            $template = $controller . '/' . $subResources . '.twig';
+
+            return $this->render($template, (array)$result);
         };
 
         $indexRequestHandler = function (Request $request) use ($app, $container, $servicePrefix, $servicePostfix, $webRequestHandler) {
@@ -76,5 +77,12 @@ class Web extends Router
         $app->get($routePrefix . '/', $indexRequestHandler);
         $app->match($routePrefix . '/{controller}', $webRequestHandler);
         $app->match($routePrefix . '/{controller}/{action}', $webRequestHandler)->assert('action', '.+');
+    }
+
+    protected function render($template, array $values, $httpCode = 200)
+    {
+        $result = $this->twig->render($template, $values);
+
+        return new Response($result, $httpCode);
     }
 }
