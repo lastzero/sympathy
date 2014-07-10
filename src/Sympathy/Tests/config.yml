@@ -34,6 +34,8 @@ parameters:
         strict_variables: false
         auto_reload: true
 
+    debug: false
+
 
 services:
     message_selector:
@@ -86,6 +88,8 @@ services:
     twig:
         class: Twig_Environment
         arguments: [ @twig.loader, %twig.options% ]
+        calls:
+            - [ addGlobal, [ 'debug', %debug% ] ]
 
     router.rest:
         class: Sympathy\Silex\Router\RestRouter
@@ -97,4 +101,4 @@ services:
 
     router.error:
         class: Sympathy\Silex\Router\ErrorRouter
-        arguments: [ @app, @twig, %exception.codes%, %exception.messages%, true ]
+        arguments: [ @app, @twig, %exception.codes%, %exception.messages%, %debug% ]
