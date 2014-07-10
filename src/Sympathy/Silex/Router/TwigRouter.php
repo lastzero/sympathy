@@ -57,7 +57,7 @@ class TwigRouter extends Router
             }
 
             if (!method_exists($controllerInstance, $actionName)) {
-                throw new NotFoundException ('Web controller method not found: ' . $actionName);
+                throw new NotFoundException ('Action not found: ' . $actionName);
             }
 
             $this->twig->addGlobal('controller', $controller);
