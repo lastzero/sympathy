@@ -19,7 +19,7 @@ abstract class Router {
         try {
             $result = $this->container->get($serviceName);
         } catch (\Exception $e) {
-            throw new NotFoundException ('Controller service not found: ' . $serviceName);
+            throw new NotFoundException ('Controller not found');
         }
 
         return $result;

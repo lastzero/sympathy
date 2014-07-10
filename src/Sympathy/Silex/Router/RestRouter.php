@@ -48,7 +48,7 @@ class RestRouter extends Router
             $controllerInstance = $this->getController($controllerService);
 
             if (!method_exists($controllerInstance, $actionName)) {
-                throw new NotFoundException ('API action not found: ' . $actionName);
+                throw new NotFoundException ($actionName . ' not found');
             }
 
             $result = call_user_func_array(array($controllerInstance, $actionName), $params);
