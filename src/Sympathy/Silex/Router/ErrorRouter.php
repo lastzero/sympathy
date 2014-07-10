@@ -5,6 +5,7 @@ namespace Sympathy\Silex\Router;
 use Silex\Application;
 use Twig_Environment;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Request;
 
 class ErrorRouter
 {
@@ -25,6 +26,20 @@ class ErrorRouter
         $this->debug = $debug;
     }
 
+    protected function isJsonRequest (Request $request) {
+        $result = false;
+
+        if(strpos($request->headers->get('Accept'), 'application/json' !== false)) {
+            $result = true;
+        }
+
+        if(strpos($request->headers->get('Content-Type'), 'application/json' !== false)) {
+            $result = true;
+        }
+
+        return $result;
+    }
+
     public function route()
     {
         $app = $this->app;
@@ -36,9 +51,11 @@ class ErrorRouter
 
             if (isset($exceptionCodes[$exceptionClass])) {
                 $code = $exceptionCodes[$exceptionClass];
+            } else {
+                $code = 500;
             }
 
-            if (0 === strpos($request->headers->get('Accept'), 'application/json')) {
+            if ($this->isJsonRequest($request)) {
                 return $this->jsonError($e, $code);
             } else {
                 return $this->htmlError($e, $code);
