@@ -87,9 +87,9 @@ class ErrorRouter
     protected function htmlError(\Exception $exception, $code)
     {
         if ($code == 404) {
-            $template = 'errors/404.twig';
+            $template = 'error/404.twig';
         } else {
-            $template = 'errors/default.twig';
+            $template = 'error/default.twig';
         }
 
         $values = $this->getErrorDetails($exception, $code);

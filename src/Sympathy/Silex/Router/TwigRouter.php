@@ -81,7 +81,7 @@ class TwigRouter extends Router
 
     protected function render($template, array $values, $httpCode = 200)
     {
-        $result = $this->twig->render($template, $values);
+        $result = $this->twig->render(strtolower($template), $values);
 
         return new Response($result, $httpCode);
     }
