@@ -66,7 +66,9 @@ class TwigRouter extends Router
 
             $result = call_user_func_array(array($controllerInstance, $actionName), $params);
 
-            if (is_string($result) && $result != '') {
+            if (is_object($result) && $result instanceof Response) {
+                $response = $result;
+            } elseif (is_string($result) && $result != '') {
                 $response = $this->redirect($result);
             } else {
                 $template = $controller . '/' . $subResources . '.twig';
