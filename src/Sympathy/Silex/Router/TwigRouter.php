@@ -4,6 +4,7 @@ namespace Sympathy\Silex\Router;
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Silex\Application;
 use Symfony\Component\DependencyInjection\Container;
 use Twig_Environment;
@@ -65,9 +66,15 @@ class TwigRouter extends Router
 
             $result = call_user_func_array(array($controllerInstance, $actionName), $params);
 
-            $template = $controller . '/' . $subResources . '.twig';
+            if (is_string($result) && $result != '') {
+                $response = $this->redirect($result);
+            } else {
+                $template = $controller . '/' . $subResources . '.twig';
 
-            return $this->render($template, (array)$result);
+                $response = $this->render($template, (array)$result);
+            }
+
+            return $response;
         };
 
         $indexRequestHandler = function (Request $request) use ($app, $container, $servicePrefix, $servicePostfix, $webRequestHandler) {
@@ -84,5 +91,12 @@ class TwigRouter extends Router
         $result = $this->twig->render(strtolower($template), $values);
 
         return new Response($result, $httpCode);
+    }
+
+    protected function redirect($url, $statusCode = 302)
+    {
+        $result = new RedirectResponse($url, $statusCode);
+
+        return $result;
     }
 }
