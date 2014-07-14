@@ -4,6 +4,7 @@ namespace Sympathy\Silex\Router;
 
 use Silex\Application;
 use Twig_Environment;
+use Twig_Error_Loader;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -52,7 +53,7 @@ class ErrorRouter
             $exceptionClass = get_class($e);
 
             if (isset($exceptionCodes[$exceptionClass])) {
-                $code = $exceptionCodes[$exceptionClass];
+                $code = (int)$exceptionCodes[$exceptionClass];
             } else {
                 $code = 500;
             }
@@ -105,15 +106,13 @@ class ErrorRouter
 
     protected function htmlError(\Exception $exception, $code)
     {
-        if ($code == 404) {
-            $template = 'error/404.twig';
-        } else {
-            $template = 'error/default.twig';
-        }
-
         $values = $this->getErrorDetails($exception, $code);
 
-        $result = $this->twig->render($template, $values);
+        try {
+            $result = $this->twig->render('error/' . $code . '.twig', $values);
+        } catch (Twig_Error_Loader $e) {
+            $result = $this->twig->render('error/default.twig', $values);
+        }
 
         return new Response($result, $code);
     }
