@@ -4,6 +4,7 @@ namespace Sympathy\Silex\Router;
 
 use Silex\Application;
 use Symfony\Component\DependencyInjection\Container;
+use Symfony\Component\DependencyInjection\Exception\InvalidArgumentException;
 
 abstract class Router {
     protected $app;
@@ -18,8 +19,8 @@ abstract class Router {
     {
         try {
             $result = $this->container->get($serviceName);
-        } catch (\Exception $e) {
-            throw new NotFoundException ('Controller not found');
+        } catch (InvalidArgumentException $e) {
+            throw new NotFoundException ($e->getMessage());
         }
 
         return $result;

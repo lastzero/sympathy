@@ -36,7 +36,6 @@ parameters:
 
     debug: false
 
-
 services:
     message_selector:
         class: \Symfony\Component\Translation\MessageSelector
