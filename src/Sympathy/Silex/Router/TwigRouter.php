@@ -8,6 +8,8 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Silex\Application;
 use Symfony\Component\DependencyInjection\Container;
 use Twig_Environment;
+use Sympathy\Silex\Router\Exception\NotFoundException;
+use Sympathy\Silex\Router\Exception\AccessDeniedException;
 
 class TwigRouter extends Router
 {
@@ -59,6 +61,10 @@ class TwigRouter extends Router
 
             if (!method_exists($controllerInstance, $actionName)) {
                 throw new NotFoundException ($actionName . ' not found');
+            }
+
+            if (!$this->hasPermission($request)) {
+                throw new AccessDeniedException ('Access denied');
             }
 
             $this->setTwigVariables($controller, $subResources);

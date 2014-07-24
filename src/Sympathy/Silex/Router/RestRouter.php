@@ -3,6 +3,8 @@
 namespace Sympathy\Silex\Router;
 
 use Symfony\Component\HttpFoundation\Request;
+use Sympathy\Silex\Router\Exception\NotFoundException;
+use Sympathy\Silex\Router\Exception\AccessDeniedException;
 
 class RestRouter extends Router
 {
@@ -49,6 +51,10 @@ class RestRouter extends Router
 
             if (!method_exists($controllerInstance, $actionName)) {
                 throw new NotFoundException ($actionName . ' not found');
+            }
+
+            if (!$this->hasPermission($request)) {
+                throw new AccessDeniedException ('Access denied');
             }
 
             $result = call_user_func_array(array($controllerInstance, $actionName), $params);

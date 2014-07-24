@@ -5,6 +5,8 @@ namespace Sympathy\Silex\Router;
 use Silex\Application;
 use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\DependencyInjection\Exception\InvalidArgumentException;
+use Symfony\Component\HttpFoundation\Request;
+use Sympathy\Silex\Router\Exception\NotFoundException;
 
 abstract class Router {
     protected $app;
@@ -24,5 +26,10 @@ abstract class Router {
         }
 
         return $result;
+    }
+
+    public function hasPermission(Request $request)
+    {
+        return true;
     }
 }
