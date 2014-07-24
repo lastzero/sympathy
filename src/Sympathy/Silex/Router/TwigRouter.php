@@ -61,8 +61,7 @@ class TwigRouter extends Router
                 throw new NotFoundException ($actionName . ' not found');
             }
 
-            $this->twig->addGlobal('controller', $controller);
-            $this->twig->addGlobal('action', $subResources);
+            $this->setTwigVariables($controller, $subResources);
 
             $result = call_user_func_array(array($controllerInstance, $actionName), $params);
 
@@ -100,5 +99,11 @@ class TwigRouter extends Router
         $result = new RedirectResponse($url, $statusCode);
 
         return $result;
+    }
+
+    protected function setTwigVariables($controller, $action)
+    {
+        $this->twig->addGlobal('controller', $controller);
+        $this->twig->addGlobal('action', $action);
     }
 }

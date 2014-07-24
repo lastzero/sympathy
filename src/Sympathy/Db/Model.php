@@ -250,9 +250,15 @@ abstract class Model {
      * @return string
      */
     public function getModelName () {
-        $modelName = substr(get_class($this), strlen($this->_factoryNamespace) + 1, strlen($this->_factoryPostfix) * -1);
+        $className = get_class($this);
 
-        return $modelName;
+        if($this->_factoryPostfix != '') {
+            $result = substr($className, strlen($this->_factoryNamespace) + 1, strlen($this->_factoryPostfix) * -1);
+        } else {
+            $result = substr($className, strlen($this->_factoryNamespace) + 1);
+        }
+
+        return $result;
     }
 
     /**
