@@ -72,7 +72,7 @@ class TwigRouter extends Router
                 throw new AccessDeniedException ('Access denied');
             }
 
-            $this->setTwigVariables($controller, $subResources);
+            $this->setTwigVariables($controller, $subResources, $request->isXmlHttpRequest());
 
             $result = call_user_func_array(array($controllerInstance, $actionName), $params);
 
@@ -112,9 +112,10 @@ class TwigRouter extends Router
         return $result;
     }
 
-    protected function setTwigVariables($controller, $action)
+    protected function setTwigVariables($controller, $action, $isXmlHttpRequest)
     {
         $this->twig->addGlobal('controller', $controller);
         $this->twig->addGlobal('action', $action);
+        $this->twig->addGlobal('ajax_request', $isXmlHttpRequest);
     }
 }
