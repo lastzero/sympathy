@@ -10,7 +10,7 @@ use Symfony\Component\DependencyInjection\Container;
 use Twig_Environment;
 use Sympathy\Silex\Router\Exception\NotFoundException;
 use Sympathy\Silex\Router\Exception\AccessDeniedException;
-use Sympathy\Silex\Router\Exception\MethodNotSupportedException;
+use Sympathy\Silex\Router\Exception\MethodNotAllowedException;
 
 class TwigRouter extends Router
 {
@@ -62,7 +62,7 @@ class TwigRouter extends Router
 
             if (!method_exists($controllerInstance, $actionName)) {
                 if(method_exists($controllerInstance, $subResources . 'Action')) {
-                    throw new MethodNotSupportedException ($request->getMethod() . ' not supported');
+                    throw new MethodNotAllowedException ($request->getMethod() . ' not supported');
                 } else {
                     throw new NotFoundException ($actionName . ' not found');
                 }

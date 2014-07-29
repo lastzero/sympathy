@@ -3,7 +3,7 @@
 namespace Sympathy\Silex\Router;
 
 use Symfony\Component\HttpFoundation\Request;
-use Sympathy\Silex\Router\Exception\MethodNotSupportedException;
+use Sympathy\Silex\Router\Exception\MethodNotAllowedException;
 use Sympathy\Silex\Router\Exception\AccessDeniedException;
 
 class RestRouter extends Router
@@ -50,7 +50,7 @@ class RestRouter extends Router
             $controllerInstance = $this->getController($controllerService);
 
             if (!method_exists($controllerInstance, $actionName)) {
-                throw new MethodNotSupportedException ($request->getMethod() . ' ' . $subResources . ' not supported');
+                throw new MethodNotAllowedException ($request->getMethod() . ' ' . $subResources . ' not supported');
             }
 
             if (!$this->hasPermission($request)) {
