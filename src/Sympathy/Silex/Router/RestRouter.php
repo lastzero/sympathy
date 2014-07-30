@@ -50,7 +50,7 @@ class RestRouter extends Router
             $controllerInstance = $this->getController($controllerService);
 
             if (!method_exists($controllerInstance, $actionName)) {
-                throw new MethodNotAllowedException ($request->getMethod() . ' ' . $subResources . ' not supported');
+                throw new MethodNotAllowedException ('Method ' . $request->getMethod() . ' not supported');
             }
 
             if (!$this->hasPermission($request)) {
