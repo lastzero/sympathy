@@ -3,7 +3,6 @@
 namespace Sympathy\Db;
 
 use Doctrine\DBAL\Connection as Db;
-use Sympathy\Form\Form;
 
 /**
  * Business Models are logically located between the controllers, which render
@@ -422,40 +421,24 @@ abstract class Model {
     }
 
     /**
-     * Permanently stores the entity
+     * Updates entity data
      *
-     * @param Form $form
-     * @throws InvalidFormException
-     * @throws CreateException
-     * @throws Exception
+     * @param array $values
+     * @throws \Exception
      * @return Model
      */
-    public function create (Form $form) {
-        if($form->hasErrors()) {
-            throw new InvalidFormException('Form passed to create() has errors');
-        }
-
-        if(!method_exists($this, '_createFromForm')) {
-            throw new CreateException('You need to implement _createFromForm($form) first');
-        }
-
+    public function update(array $values)
+    {
         $dao = $this->getDao();
 
         // Start the database transaction
         $dao->beginTransaction();
 
         try {
-            /* Note: You need to create a specific function for this operation!
-             * Example:
-             * 
-             * protected function _createFromForm (Form $form) {
-             *     $this->getDao()->setValues($form->getValues())->insert();
-             * }
-             */
-            $this->_createFromForm($form);
+            $this->_update($values);
 
             $dao->commit();
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             // Roll back in case of ANY error and throw exception
             $dao->rollBack();
 
@@ -465,41 +448,34 @@ abstract class Model {
         return $this;
     }
 
+    protected function _update(array $values)
+    {
+        $dao = $this->getDao();
+
+        $dao->setValues($values);
+
+        $dao->update();
+    }
+
     /**
-     * Updates stored entity data
+     * Permanently store entity data
      *
-     * @param Form $form
-     * @throws InvalidFormException
-     * @throws UpdateException
-     * @throws Exception
+     * @param array $values
+     * @throws \Exception
      * @return Model
      */
-    public function update (Form $form) {
-        if($form->hasErrors()) {
-            throw new InvalidFormException('Form passed to update() has errors');
-        }
-
-        if(!method_exists($this, '_updateFromForm')) {
-            throw new UpdateException('You need to implement _updateFromForm($form) first');
-        }
-
+    public function create(array $values)
+    {
         $dao = $this->getDao();
 
         // Start the database transaction
         $dao->beginTransaction();
 
         try {
-            /* Note: You need to create a specific function for this operation!
-             * Example:
-             * 
-             * protected function _updateFromForm (Form $form) {
-             *     $this->getDao()->setValues($form->getValues())->update();
-             * }
-             */
-            $this->_updateFromForm($form);
+            $this->_create($values);
 
             $dao->commit();
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             // Roll back in case of ANY error and throw exception
             $dao->rollBack();
 
@@ -507,5 +483,14 @@ abstract class Model {
         }
 
         return $this;
+    }
+
+    protected function _create(array $values)
+    {
+        $dao = $this->getDao();
+
+        $dao->setValues($values);
+
+        $dao->insert();
     }
 }
