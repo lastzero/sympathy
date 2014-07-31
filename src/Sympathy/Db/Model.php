@@ -110,11 +110,24 @@ abstract class Model {
     }
 
     /**
+     * Loads values from data source
+     *
      * @param int $id
      * @return $this
      */
     public function find ($id) {
         $this->getDao()->find($id);
+
+        return $this;
+    }
+
+    /**
+     * Reloads values from data source
+     *
+     * @return $this
+     */
+    public function reload () {
+        $this->getDao()->reload();
 
         return $this;
     }
@@ -492,5 +505,7 @@ abstract class Model {
         $dao->setValues($values);
 
         $dao->insert();
+
+        $dao->reload();
     }
 }

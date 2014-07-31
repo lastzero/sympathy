@@ -221,6 +221,19 @@ abstract class Entity extends Dao
     }
 
     /**
+     * Reloads the entity values from database
+     *
+     * @return $this
+     * @throws NotFoundException
+     */
+    public function reload()
+    {
+        $id = $this->getWhereAsArray();
+
+        return $this->find($id);
+    }
+
+    /**
      * Check if an entry with the given primary key or key/value exists in the database
      *
      * @param mixed $id The primary key or an array (key/value)
