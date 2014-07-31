@@ -121,6 +121,48 @@ class FormTest extends UnitTestCase
         $this->assertEquals(false, $result['mustsee']);
     }
 
+    public function testGetFirstError()
+    {
+        $this->form->setDefinition(
+            array(
+                'firstname' => array(
+                    'type' => 'string',
+                    'min' => 1,
+                    'max' => 100,
+                    'caption' => 'Vorname'
+                ),
+                'lastname' => array(
+                    'type' => 'string',
+                    'min' => 3,
+                    'max' => 100,
+                    'caption' => 'Nachname'
+                ),
+                'email' => array(
+                    'type' => 'email'
+                )
+            )
+        );
+
+        $values = array(
+            'firstname' => 'Jens',
+            'lastname' => 'Mo',
+            'email' => 'xyz'
+        );
+
+        $this->form->setWritableValues($values);
+
+        $this->form->validate();
+
+        $errors = $this->form->getErrors();
+
+        $this->assertEquals(2, count($errors));
+
+        $expected = 'Nachname ist zu kurz (min. 3 Zeichen)';
+        $result = $this->form->getFirstError();
+
+        $this->assertEquals($expected, $result);
+    }
+
     public function testGetErrorsOnPage()
     {
         $this->form->setDefinition(

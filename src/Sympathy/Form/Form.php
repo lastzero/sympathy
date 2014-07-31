@@ -778,7 +778,25 @@ class Form
     }
 
     /**
-     * Returns all errors as indented text (useful for tests)
+     * Returns the first error as string
+     *
+     * @return string
+     */
+    public function getFirstError()
+    {
+        $result = '';
+        $errors = $this->getErrors();
+        $firstField = reset($errors);
+
+        if($firstField && isset($firstField[0])) {
+            $result = $firstField[0];
+        }
+
+        return $result;
+    }
+
+    /**
+     * Returns all errors as indented text
      *
      * @return string
      */
