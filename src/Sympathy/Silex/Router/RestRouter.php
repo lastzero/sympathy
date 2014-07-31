@@ -29,7 +29,7 @@ class RestRouter extends Router
 
             $count = count($parts);
 
-            if ($count == 0) {
+            if ($count == 0 && $prefix == 'get') {
                 $prefix = 'c' . $prefix;
             }
 
