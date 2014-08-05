@@ -120,8 +120,8 @@ class TwigRouter extends Router
 
     protected function setTwigVariables($controller, $action, $isXmlHttpRequest)
     {
-        $this->twig->addGlobal('controller', $controller);
-        $this->twig->addGlobal('action', $action);
+        $this->twig->addGlobal('controller', strtolower($controller));
+        $this->twig->addGlobal('action', strtolower($action));
         $this->twig->addGlobal('ajax_request', $isXmlHttpRequest);
     }
 }
