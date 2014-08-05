@@ -28,8 +28,14 @@ class TwigRouter extends Router
         $container = $this->container;
 
         $webRequestHandler = function ($controller, Request $request, $action = '') use ($app, $container, $servicePrefix, $servicePostfix) {
+            // indexAction is default
             if (!$action) {
                 $action = 'index';
+            }
+
+            // Remove trailing .html
+            if(stripos($action, '.html') === (strlen($action) - 5)) {
+                $action = substr($action, 0, -5);
             }
 
             $prefix = strtolower($request->getMethod());
