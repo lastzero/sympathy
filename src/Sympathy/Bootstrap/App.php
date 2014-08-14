@@ -7,6 +7,7 @@ use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBag;
+use Symfony\Component\DependencyInjection\Dumper\PhpDumper;
 
 class App
 {
@@ -28,9 +29,25 @@ class App
 
     protected function boot()
     {
-        $this->container = new ContainerBuilder(new ParameterBag($this->getAppParameters()));
+        if($this->debug) {
+            $this->container = new ContainerBuilder(new ParameterBag($this->getAppParameters()));
+            $this->loadContainerConfiguration();
+        } else {
+            $environment =  $this->getEnvironment();
+            $filename = $this->getCachePath() . '/' . $environment . '_container.php';
 
-        $this->loadContainerConfiguration();
+            if (file_exists($filename)) {
+                require_once($filename);
+                $this->container = new \ProjectServiceContainer();
+            } else {
+                $this->container = new ContainerBuilder(new ParameterBag($this->getAppParameters()));
+                $this->loadContainerConfiguration();
+                $this->container->compile();
+
+                $dumper = new PhpDumper($this->container);
+                file_put_contents($filename, $dumper->dump());
+            }
+        }
     }
 
     /**
@@ -81,17 +98,17 @@ class App
 
     public function getLogPath()
     {
-        return realpath($this->appPath . '/../var/log');
+        return realpath($this->getAppPath() . '/../var/log');
     }
 
     public function getConfigPath()
     {
-        return $this->appPath . '/config';
+        return $this->getAppPath() . '/config';
     }
 
     public function getCachePath()
     {
-        return realpath($this->appPath . '/../var/cache');
+        return realpath($this->getAppPath() . '/../var/cache');
     }
 
     public function getAppPath()

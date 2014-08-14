@@ -19,7 +19,7 @@ class AppTest extends UnitTestCase
 
     public function setUp()
     {
-        $this->app = new App('sympathy_test', __DIR__ . '/App', false);
+        $this->app = new App('sympathy_test', __DIR__ . '/App', true);
     }
 
     public function testGetName()
