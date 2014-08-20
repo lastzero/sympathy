@@ -1,9 +1,11 @@
-Model and DAO classes for Doctrine DBAL
-=======================================
+Models and DAOs for Doctrine DBAL
+=================================
+
+The Sympathy Model and Database Access Object (DAO) classes encapsulate Doctrine DBAL to provide extendable CRUD (create, read, update, delete) functionality for relational databases.
 
 Data Access Objects
 -------------------
-DAOs directly deal with database tables and raw SQL, if needed. To implement raw SQL only, you can use the basic `Sympathy\Db\Dao` class, while `Sympathy\Db\Entity` inherits from this and adds many powerful methods to easily deal with single database tables.
+DAOs directly deal with database tables and raw SQL, if needed. To implement raw SQL only, you can use `Sympathy\Db\Dao` class, while `Sympathy\Db\Entity` offers many powerful methods to easily deal with single database tables.
 
 Example:
     
@@ -25,7 +27,7 @@ Models
 ------
 **Models** (also called "Business Models" or "Business Objects") are logically located between **Controllers** - which render views and validate user input - and **Data Access Objects** (DAOs), that are low-level interfaces to a storage backend or Web service.
 
-Public interfaces of models are high-level and should reflect all use cases within their domain. There is a number of standard use-cases (CRUD - create, read, update, delete) that are pre-implemented in the base class `Sympathy\Db\Model`:
+Public interfaces of models are high-level and should reflect all use cases within their domain. There are a number of standard use-cases that are pre-implemented in the base class `Sympathy\Db\Model`:
 - `factory ($name = '', Dao $dao = null)`: Create a new model instance
 - `find ($id)`: Find a record by primary key
 - `reload ()`: Reload values from database
