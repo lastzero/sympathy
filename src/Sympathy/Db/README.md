@@ -1,6 +1,28 @@
-Models and Data Access Object wrappers for Doctrine DBAL
-========================================================
+Model and DAO classes for Doctrine DBAL
+=======================================
 
+Data Access Objects
+-------------------
+DAOs directly deal with database tables and raw SQL, if needed. To implement raw SQL only, you can use the basic `Sympathy\Db\Dao` class, while `Sympathy\Db\Entity` inherits from this and adds many powerful methods to easily deal with single database tables.
+
+Example:
+    
+    <?php
+    
+    namespace App\Dao;
+    
+    use Sympathy\Db\Entity;
+    
+    abstract class UserDao extends Entity
+    {
+        protected $_factoryNamespace = 'App\\Dao';
+        protected $_tableName = 'users';
+        protected $_primaryKey = 'user_id';
+        protected $_timestampEnabled = true;
+    }
+
+Models
+------
 **Models** (also called "Business Models" or "Business Objects") are logically located between **Controllers** - which render views and validate user input - and **Data Access Objects** (DAOs), that are low-level interfaces to a storage backend or Web service.
 
 Public interfaces of models are high-level and should reflect all use cases within their domain. There is a number of standard use-cases (CRUD - create, read, update, delete) that are pre-implemented in the base class `Sympathy\Db\Model`:
@@ -22,7 +44,39 @@ Public interfaces of models are high-level and should reflect all use cases with
 - `getTableName ()`: Returns the name of the associated main database table
 - `hasTimestampEnabled ()`: Returns true, if timestamps are enabled for the associated DAO
 - `delete ()`: Permanently delete the entity record from the database
-- `update(array $values)`: Update existing entity; before assigning multiple values to a model instance, data should be validated using a form class
 - `create(array $values)`: Create a new record using the values provided
+- `update(array $values)`: Update model instance database record; before assigning multiple values to a model instance, data should be validated using a form class
 
 **How much validation should be implemented within a model?** Wherever invalid data can lead to security issues or major inconsistencies, some core validation rules must be implemented in the model layer. Model exception messages usually don’t require translation (in multilingual applications), since invalid values should be recognized beforehand by a form class. If you expect certain exceptions, you should catch and handle them in your controllers.
+
+Example:
+
+    <?php
+    
+    namespace App\Model;
+    
+    use Sympathy\Db\Model;
+    
+    class User extends Model {
+      protected $_daoName = ‘User’;
+      protected $_factoryNamespace = 'App\\Model';
+      protected $_factoryPostfix = '';
+      protected $_daoFactoryNamespace = 'App\\Dao';
+      
+      public function delete () {
+        $dao = $this->getDao();
+        $dao->is_deleted = 1;
+        $dao->update();
+      }
+    
+      public function undelete () {
+        $dao = $this->getDao();
+        $dao->is_deleted = 0;
+        $dao->update();
+      }
+    
+      public function search (array $cond, array $options = array()) {
+        $cond[‘is_deleted’] = 0;
+        return parent::search($cond, $options);
+      }
+    }
