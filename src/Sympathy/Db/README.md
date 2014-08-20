@@ -39,6 +39,22 @@ In addition, `Sympathy\Db\Entity` offers many powerful methods to easily deal wi
 - `getTableName()`: Returns the name of the underlying database table
 - `getPrimaryKeyName()`: Returns the name of the primary key column (throws an exception, if primary key is an array)
 
+search() accepts the following optional parameters:
+- `table`: Table name
+- `table_alias`: Alias name for "table" (table reference for join and join_left)
+- `cond`: Filters as associative array (key = value)
+- `count`: Maximum number of results (integer)
+- `offset`: Result offset (integer)
+- `join`: List of joined tables incl join condition e.g. `array(array('u', 'phonenumbers', 'p', 'u.id = p.user_id'))`, see Doctrine DBAL manual
+- `left_join`: See join
+- `columns`: List of columns (array)
+- `order`: Sort order (if not false)
+- `group`: Group by (if not false)
+- `wrap`: If false, raw arrays are returned instead of DAO instances
+- `ids_only`: Return primary key values only
+- `sql_filter`: Raw SQL filter (WHERE)
+- `id_filter`: If not empty, limit result to this list of primary key IDs
+
 DAO entities are configured using protected class properties:
 
     protected $_tableName = ''; // Database table name
