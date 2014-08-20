@@ -1,7 +1,7 @@
 Models and DAOs for Doctrine DBAL
 =================================
 
-The Sympathy Model and Database Access Object (DAO) classes encapsulate Doctrine DBAL to provide extendable CRUD (create, read, update, delete) functionality for relational databases.
+The Sympathy Model and Database Access Object (DAO) classes encapsulate Doctrine DBAL to provide high-performance, object-oriented CRUD (create, read, update, delete) functionality for relational databases. This is not an ORM (object-relational mapping) framework and there are no requirements to the underlying database structure.
 
 Data Access Objects
 -------------------
