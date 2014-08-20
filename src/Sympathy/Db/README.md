@@ -39,7 +39,7 @@ In addition, `Sympathy\Db\Entity` offers many powerful methods to easily deal wi
 - `getTableName()`: Returns the name of the underlying database table
 - `getPrimaryKeyName()`: Returns the name of the primary key column (throws an exception, if primary key is an array)
 
-search() accepts the following optional parameters:
+search() accepts the following optional parameters to limit, filter and sort search results:
 - `table`: Table name
 - `table_alias`: Alias name for "table" (table reference for join and join_left)
 - `cond`: Filters as associative array (key = value)
