@@ -66,6 +66,21 @@ DAO entities are configured using protected class properties:
     protected $_timestampCreatedCol = 'created';
     protected $_timestampUpdatedCol = 'updated';
 
+Possible values for $_formatMap are defined as constants in `Sympathy\Db\Format`:
+
+    const NONE = '';
+    const INT = 'int';
+    const FLOAT = 'float';
+    const STRING = 'string';
+    const ALPHANUMERIC = 'alphanumeric';
+    const SERIALIZED = 'serialized';
+    const JSON = 'json';
+    const BOOL = 'bool';
+    const TIME = 'H:i:s';
+    const DATE = 'Y-m-d';
+    const DATETIME = 'Y-m-d H:i:s';
+    const TIMESTAMP = 'U';
+
 Example:
     
     <?php
