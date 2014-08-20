@@ -84,7 +84,7 @@ abstract class Model {
     }
 
     /**
-     * Creates a new model instance
+     * Create a new model instance
      *
      * @param string $name Optional model name (current model name if empty)
      * @param Dao $dao DB DAO instance
@@ -110,7 +110,7 @@ abstract class Model {
     }
 
     /**
-     * Loads values from data source
+     * Find a record by primary key
      *
      * @param int $id
      * @return $this
@@ -122,7 +122,7 @@ abstract class Model {
     }
 
     /**
-     * Reloads values from data source
+     * Reload values from database
      *
      * @return $this
      */
@@ -169,8 +169,8 @@ abstract class Model {
     }
 
     /**
-     * Performs a search ($options can contain count, offset and/or sort order; the return value array also
-     * contains count, offset, sort order plus the total number of results; see DAO documentation)
+     * Perform a search ($options can contain count, offset and/or sort order; the return value array
+     * also contains count, offset, sort order plus the total number of results; see DAO documentation)
      *
      * @param array $cond The search conditions as array
      * @param array $options The optional search options as array
@@ -213,7 +213,7 @@ abstract class Model {
     }
 
     /**
-     * Search for a single row; throws an exception if 0 or more than 1 rows are found
+     * Search a single record; throws an exception if 0 or more than one record are found
      *
      * @param array $cond The search conditions as array
      * @throws NotFoundException
@@ -283,7 +283,7 @@ abstract class Model {
     }
 
     /**
-     * Checks, if the model instance has an ID assigned (primary key on the database level)
+     * Returns true, if the model instance has an ID assigned (primary key)
      *
      * @return bool
      */
