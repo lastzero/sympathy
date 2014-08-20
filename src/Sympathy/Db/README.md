@@ -9,7 +9,7 @@ The Sympathy Model and Database Access Object (DAO) classes encapsulate Doctrine
 
 Data Access Objects
 -------------------
-DAOs directly deal with **database tables** and **raw SQL**, if needed. To implement custom methods using raw SQL, you can use `Sympathy\Db\Dao`, which only exposes these public methods by default:
+DAOs directly deal with **database tables** and **raw SQL**, if needed. `Sympathy\Db\Dao` is suited to implement custom methods using raw SQL. All DAOs expose the following public methods by default:
 - `factory($name)`: Returns a new DAO instance
 - `beginTransaction()`: Start a database transaction
 - `commit()`: Commit a database transaction
@@ -38,6 +38,17 @@ In addition, `Sympathy\Db\Entity` offers many powerful methods to easily deal wi
 - `findList($colName, $order = '', $where = '', $indexName = '')`: Returns a key/value array (list) of all matching rows
 - `getTableName()`: Returns the name of the underlying database table
 - `getPrimaryKeyName()`: Returns the name of the primary key column (throws an exception, if primary key is an array)
+
+DAO entities are configured using protected class properties:
+
+    protected $_tableName = ''; // Database table name
+    protected $_primaryKey = 'id'; // Name or array of primary key(s)
+    protected $_fieldMap = array(); // 'db_column' => 'object_property'
+    protected $_formatMap = array(); // 'db_column' => Format::TYPE
+    protected $_valueMap = array(); // 'object_property' => 'db_column'
+    protected $_timestampEnabled = false; // Automatically update timestamps?
+    protected $_timestampCreatedCol = 'created';
+    protected $_timestampUpdatedCol = 'updated';
 
 Example:
     
@@ -82,6 +93,14 @@ Public interfaces of models are high-level and should reflect all use cases with
 - `update(array $values)`: Update model instance database record; before assigning multiple values to a model instance, data should be validated using a form class
 
 **How much validation should be implemented within a model?** Wherever invalid data can lead to security issues or major inconsistencies, some core validation rules must be implemented in the model layer. Model exception messages usually don’t require translation (in multilingual applications), since invalid values should be recognized beforehand by a form class. If you expect certain exceptions, you should catch and handle them in your controllers.
+
+Similar to DAOs, models are configured using protected class properties:
+
+    protected $_daoName = ''; // Primary DAO name (no prefix/postfix)
+    protected $_factoryNamespace = '';
+    protected $_factoryPostfix = 'Model';
+    protected $_daoFactoryNamespace = '';
+    protected $_daoFactoryPostfix = 'Dao';
 
 Example:
 
