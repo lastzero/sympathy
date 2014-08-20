@@ -15,7 +15,8 @@ use Doctrine\DBAL\Connection as Db;
  * @package Sympathy
  * @license MIT
  */
-abstract class Model {
+abstract class Model
+{
     private $_db; // Reference to the database connection
     protected $_daoName = ''; // Main data access object (DAO) class name (without prefix)
     protected $_dao; // Reference to DAO instance
@@ -30,10 +31,11 @@ abstract class Model {
      * @param $db Db The current database connection instance
      * @param $dao Dao An instance of a DOA to initialize this instance (otherwise, you must call find/search)
      */
-    public function __construct (Db $db, Dao $dao = null) {
+    public function __construct(Db $db, Dao $dao = null)
+    {
         $this->_db = $db;
 
-        if(!empty($dao)) {
+        if (!empty($dao)) {
             $this->_dao = $dao;
         }
     }
@@ -45,18 +47,19 @@ abstract class Model {
      * @throws Exception
      * @return Entity
      */
-    protected function daoFactory ($name = '') {
+    protected function daoFactory($name = '')
+    {
         $daoName = empty($name) ? $this->_daoName : $name;
 
-        if(empty($daoName)) {
+        if (empty($daoName)) {
             throw new Exception ('The DAO factory requires a DAO name');
         }
 
-        if(empty($this->_db)) {
+        if (empty($this->_db)) {
             throw new Exception ('Database instance is empty in DAO factory');
         }
 
-        $className = $this->_daoFactoryNamespace . '\\' . $daoName  . $this->_daoFactoryPostfix;
+        $className = $this->_daoFactoryNamespace . '\\' . $daoName . $this->_daoFactoryPostfix;
 
         $dao = new $className ($this->_db);
 
@@ -68,8 +71,9 @@ abstract class Model {
      *
      * @return Entity
      */
-    protected function getDao () {
-        if(empty($this->_dao)) {
+    protected function getDao()
+    {
+        if (empty($this->_dao)) {
             $this->_dao = $this->daoFactory();
         }
 
@@ -79,7 +83,8 @@ abstract class Model {
     /**
      * Resets the internal DAO reference
      */
-    protected function resetDao () {
+    protected function resetDao()
+    {
         $this->_dao = $this->daoFactory();
     }
 
@@ -91,14 +96,15 @@ abstract class Model {
      * @throws Exception
      * @return Model
      */
-    public function factory ($name = '', Dao $dao = null) {
+    public function factory($name = '', Dao $dao = null)
+    {
         $modelName = empty($name) ? $this->getModelName() : $name;
 
-        if(empty($modelName)) {
+        if (empty($modelName)) {
             throw new Exception ('The model factory requires a model name');
         }
 
-        if(empty($this->_db)) {
+        if (empty($this->_db)) {
             throw new Exception ('Database instance is empty in model factory');
         }
 
@@ -115,7 +121,8 @@ abstract class Model {
      * @param int $id
      * @return $this
      */
-    public function find ($id) {
+    public function find($id)
+    {
         $this->getDao()->find($id);
 
         return $this;
@@ -126,7 +133,8 @@ abstract class Model {
      *
      * @return $this
      */
-    public function reload () {
+    public function reload()
+    {
         $this->getDao()->reload();
 
         return $this;
@@ -138,14 +146,15 @@ abstract class Model {
      * @throws FindException
      * @return array
      */
-    public function findAll (array $cond = array(), $wrapResult = true) {
+    public function findAll(array $cond = array(), $wrapResult = true)
+    {
         $result = $this->getDao()->findAll($cond, $wrapResult);
 
-        if(!is_array($result)) {
+        if (!is_array($result)) {
             throw new FindException('DAO findAll() return value is not an array');
         }
 
-        if($wrapResult) {
+        if ($wrapResult) {
             $result = $this->wrapAll($result);
         }
 
@@ -158,7 +167,8 @@ abstract class Model {
      * @param array $result
      * @return array
      */
-    protected function wrapAll(array $result) {
+    protected function wrapAll(array $result)
+    {
         $modelName = $this->getModelName();
 
         foreach ($result as &$entity) {
@@ -177,16 +187,17 @@ abstract class Model {
      * @throws FindException
      * @return array
      */
-    public function search (array $cond, array $options = array()) {
+    public function search(array $cond, array $options = array())
+    {
         $params = $options + array('cond' => $cond);
 
         $result = $this->getDao()->search($params);
 
-        if(!is_array($result)) {
+        if (!is_array($result)) {
             throw new FindException('DAO search() return value is not an array');
         }
 
-        if(!isset($options['ids_only']) || $options['ids_only'] == false) {
+        if (!isset($options['ids_only']) || $options['ids_only'] == false) {
             $result['rows'] = $this->wrapAll($result['rows']);
         }
 
@@ -200,7 +211,8 @@ abstract class Model {
      * @param mixed $order The sort order (use an array for multiple columns)
      * @return array
      */
-    public function searchAll (array $cond = array(), $order = false) {
+    public function searchAll(array $cond = array(), $order = false)
+    {
         $options = array(
             'order' => $order,
             'count' => 0,
@@ -219,7 +231,8 @@ abstract class Model {
      * @throws NotFoundException
      * @return array
      */
-    public function searchOne (array $cond = array()) {
+    public function searchOne(array $cond = array())
+    {
         $options = array(
             'count' => 1,
             'offset' => 0
@@ -227,7 +240,7 @@ abstract class Model {
 
         $result = $this->search($cond, $options);
 
-        if($result['total'] != 1) {
+        if ($result['total'] != 1) {
             throw new NotFoundException($result['total'] . ' matching items found');
         }
 
@@ -242,14 +255,15 @@ abstract class Model {
      * @throws FindException
      * @return array
      */
-    public function searchIds (array $cond, array $options = array()) {
+    public function searchIds(array $cond, array $options = array())
+    {
         $params = $options + array('cond' => $cond);
 
         $params['ids_only'] = true;
 
         $result = $this->getDao()->search($params);
 
-        if(!is_array($result)) {
+        if (!is_array($result)) {
             throw new FindException('DAO search() return value is not an array');
         }
 
@@ -261,10 +275,11 @@ abstract class Model {
      *
      * @return string
      */
-    public function getModelName () {
+    public function getModelName()
+    {
         $className = get_class($this);
 
-        if($this->_factoryPostfix != '') {
+        if ($this->_factoryPostfix != '') {
             $result = substr($className, strlen($this->_factoryNamespace) + 1, strlen($this->_factoryPostfix) * -1);
         } else {
             $result = substr($className, strlen($this->_factoryNamespace) + 1);
@@ -278,7 +293,8 @@ abstract class Model {
      *
      * @return mixed Primary key
      */
-    public function getId () {
+    public function getId()
+    {
         return $this->getDao()->getId();
     }
 
@@ -287,7 +303,8 @@ abstract class Model {
      *
      * @return bool
      */
-    public function hasId () {
+    public function hasId()
+    {
         return $this->getDao()->hasId();
     }
 
@@ -297,7 +314,8 @@ abstract class Model {
      *
      * @return array Model property values
      */
-    public function getValues () {
+    public function getValues()
+    {
         return $this->getDao()->getValues();
     }
 
@@ -308,7 +326,8 @@ abstract class Model {
      *
      * @return string
      */
-    public function getEntityTitle () {
+    public function getEntityTitle()
+    {
         return $this->_daoName . ' ' . $this->getId();
     }
 
@@ -318,7 +337,8 @@ abstract class Model {
      *
      * @return bool
      */
-    public function isDeletable () {
+    public function isDeletable()
+    {
         return true;
     }
 
@@ -330,14 +350,15 @@ abstract class Model {
      * @throws UpdateException
      * @return object this
      */
-    public function batchEdit (array $ids, array $properties) {
+    public function batchEdit(array $ids, array $properties)
+    {
         $this->getDao()->beginTransaction();
 
         try {
-            foreach($ids as $id) {
+            foreach ($ids as $id) {
                 $dao = $this->daoFactory()->find($id);
 
-                foreach($properties as $key => $value) {
+                foreach ($properties as $key => $value) {
                     $dao->$key = $value;
                 }
 
@@ -361,7 +382,8 @@ abstract class Model {
      *
      * @return string
      */
-    public function getTableName () {
+    public function getTableName()
+    {
         return $this->getDao()->getTableName();
     }
 
@@ -369,7 +391,8 @@ abstract class Model {
      * Magic getter
      *
      */
-    public function __get ($name) {
+    public function __get($name)
+    {
         return $this->getDao()->$name;
     }
 
@@ -380,7 +403,8 @@ abstract class Model {
      * change data based on field names. Each specific use case needs a separate
      * function.
      */
-    public function __set ($name, $value) {
+    public function __set($name, $value)
+    {
         throw new ModelException (
             'A use case specific method must be implemented to change any ' .
             'model data. Magic setters are therefore not available. ' .
@@ -393,14 +417,16 @@ abstract class Model {
      *
      * @return bool
      */
-    public function hasTimestampEnabled () {
+    public function hasTimestampEnabled()
+    {
         return $this->getDao()->hasTimestampEnabled();
     }
 
     /**
      * Deletes the stored data without any checks
      */
-    protected function _delete () {
+    protected function _delete()
+    {
         $dao = $this->getDao();
 
         // Start the database transaction
@@ -423,8 +449,9 @@ abstract class Model {
      *
      * @throws DeleteException
      */
-    public function delete () {
-        if(!$this->hasId() || !$this->isDeletable()) {
+    public function delete()
+    {
+        if (!$this->hasId() || !$this->isDeletable()) {
             throw new DeleteException('Entity can not be deleted');
         }
 
