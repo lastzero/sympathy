@@ -5,7 +5,7 @@ The Sympathy Model and Database Access Object (DAO) classes encapsulate Doctrine
 
 Data Access Objects
 -------------------
-DAOs directly deal with database tables and raw SQL, if needed. To implement raw SQL only, you can use `Sympathy\Db\Dao` class, while `Sympathy\Db\Entity` offers many powerful methods to easily deal with single database tables.
+DAOs directly deal with **database tables** and **raw SQL**, if needed. To implement raw SQL only, you can use `Sympathy\Db\Dao`, while `Sympathy\Db\Entity` offers many powerful methods to easily deal with single database tables.
 
 Example:
     
@@ -15,7 +15,7 @@ Example:
     
     use Sympathy\Db\Entity;
     
-    abstract class UserDao extends Entity
+    class UserDao extends Entity
     {
         protected $_factoryNamespace = 'App\\Dao';
         protected $_tableName = 'users';
