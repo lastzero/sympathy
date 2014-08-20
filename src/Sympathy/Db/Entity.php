@@ -22,11 +22,11 @@ abstract class Entity extends Dao
     private $_data = array(); // Property cache
     private $_originalData = array(); // Property cache (equals $_data after calling find() or update())
 
-    protected $_tableName = ''; // Name of the primary database table
-    protected $_primaryKey = 'id'; // Name of primary key field
-    protected $_fieldMap = array(); // 'db_field' => 'object_field'
-    protected $_formatMap = array(); // 'db_field' => Format::TYPE
-    protected $_valueMap = array(); // 'object_field' => 'db_field'
+    protected $_tableName = ''; // Database table name
+    protected $_primaryKey = 'id'; // Name of primary key column
+    protected $_fieldMap = array(); // 'db_column' => 'object_property'
+    protected $_formatMap = array(); // 'db_column' => Format::TYPE
+    protected $_valueMap = array(); // 'object_property' => 'db_column'
 
     protected $_timestampEnabled = false; // Set to true to enable "updated" and "created" timestamps
     protected $_timestampCreatedCol = 'created';
