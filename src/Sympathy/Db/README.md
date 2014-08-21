@@ -115,7 +115,9 @@ Public interfaces of models are high-level and should reflect all use cases with
 - `hasId()`: Returns true, if the model instance has an ID assigned (primary key)
 - `getValues()`: Returns all model properties as associative array
 - `getEntityTitle()`: Returns the common name of this entity
-- `isDeletable()`: Returns true, if the model instance can be deleted
+- `isDeletable()`: Returns true, if the model instance can be deleted with delete()
+- `isUpdatable()`: Returns true, if the model instance can be updated with update($values)
+- `isCreatable()`: Returns true, if new entities can be created in the database with create($values)
 - `batchEdit(array $ids, array $properties)`: Update data for multiple records
 - `getTableName()`: Returns the name of the associated main database table
 - `hasTimestampEnabled()`: Returns true, if timestamps are enabled for the associated DAO

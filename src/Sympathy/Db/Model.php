@@ -343,6 +343,28 @@ abstract class Model
     }
 
     /**
+     * Returns true, if this model instance can be updated
+     * (not related to user's specific rights, which can be different)
+     *
+     * @return bool
+     */
+    public function isUpdatable()
+    {
+        return true;
+    }
+
+    /**
+     * Returns true, if new entities can be created in the database
+     * (not related to user's specific rights, which can be different)
+     *
+     * @return bool
+     */
+    public function isCreatable()
+    {
+        return true;
+    }
+
+    /**
      * Update the data of multiple DAO instances
      *
      * @param array $ids The IDs (primary keys) of the entities to be changed
@@ -469,6 +491,10 @@ abstract class Model
      */
     public function update(array $values)
     {
+        if (!$this->hasId() || !$this->isUpdatable()) {
+            throw new UpdateException('Entity can not be updated');
+        }
+
         $dao = $this->getDao();
 
         // Start the database transaction
@@ -506,6 +532,10 @@ abstract class Model
      */
     public function create(array $values)
     {
+        if (!$this->isCreatable()) {
+            throw new CreateException('New entities can not be created');
+        }
+
         $dao = $this->getDao();
 
         // Start the database transaction
