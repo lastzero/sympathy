@@ -1,7 +1,7 @@
 Sympathy DB: Object-oriented CRUD for Doctrine DBAL
 ===================================================
 
-The Sympathy Model and Database Access Object (DAO) classes encapsulate Doctrine DBAL to provide high-performance, object-oriented CRUD (create, read, update, delete) functionality for relational databases:
+The Sympathy Model and Database Access Object (DAO) classes encapsulate Doctrine DBAL to provide high-performance, object-oriented CRUD (create, read, update, delete) functionality for relational databases.
 
 ![Architecture](https://lastzero.net/wp-content/uploads/2014/08/sympathy_db.png)
 
@@ -169,4 +169,84 @@ Example:
         $cond[‘is_deleted’] = 0;
         return parent::search($cond, $options);
       }
+      
+      public function getValues()
+      {
+        $result = parent::getValues();
+        unset($result['password']);
+        return $result;
+      }
+    }
+    
+Usage
+-----
+
+    <?php
+    
+    namespace App\Rest;
+    
+    use Symfony\Component\HttpFoundation\Request;
+    use App\Exception\FormInvalidException;
+    use App\Form\UserForm;
+    use App\Model\User;
+    
+    class UserController
+    {
+        protected $user;
+        protected $form;
+
+        public function __construct(User $user, UserForm $form)
+        {
+            $this->user = $user;
+            $this->form = $form;
+        }
+
+        public function cgetAction()
+        {
+            $users = $this->user->findAll();
+            $result = array();
+    
+            foreach($users as $user) {
+                $result[] = $user->getValues();
+            }
+    
+            return $result;
+        }
+    
+        public function getAction($id)
+        {
+            return $this->user->find($id)->getValues();
+        }
+    
+        public function deleteAction($id)
+        {
+            return $this->user->find($id)->delete();
+        }
+    
+        public function putAction($id, Request $request)
+        {
+            $this->user->find($id);
+            $this->form->setDefinedWritableValues($request->request->all())->validate();
+    
+            if($this->form->hasErrors()) {
+                throw new FormInvalidException($this->form->getFirstError());
+            } else {
+                $this->user->update($this->form->getValues());
+            }
+    
+            return $this->user->getValues();
+        }
+    
+        public function postAction(Request $request)
+        {
+            $this->form->setDefinedWritableValues($request->request->all())->validate();
+    
+            if($this->form->hasErrors()) {
+                throw new FormInvalidException($this->form->getFirstError());
+            } else {
+                $this->user->create($this->form->getValues());
+            }
+    
+            return $this->user->getValues();
+        }
     }
