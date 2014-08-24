@@ -21,7 +21,7 @@
         "natxet/CssMin": "dev-master",
         "silex/silex": "~1.2",
         "twig/twig": "~1.12",
-        "lastzero/test-tools": "dev-master"
+        "lastzero/test-tools": "0.7"
     },
     "require-dev": {
         "natxet/CssMin": "dev-master",
