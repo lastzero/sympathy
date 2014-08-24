@@ -1,5 +1,5 @@
-Components for Silex / Symfony
-==============================
+Components for the Symfony Ecosystem
+====================================
 
 [![Build Status](https://travis-ci.org/lastzero/sympathy.png?branch=master)](https://travis-ci.org/lastzero/sympathy)
 
