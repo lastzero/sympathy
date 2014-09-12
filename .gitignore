@@ -46,6 +46,6 @@ composer.lock
 .goutputstream*
 .c9revisions
 .settings
-.swp
+.*\.swp
 .tmp
 phpunit.xml
