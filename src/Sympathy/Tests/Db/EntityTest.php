@@ -40,4 +40,30 @@ class EntityTest extends UnitTestCase
         $this->assertEquals('foo@bar.com', $user->email);
         $this->assertEquals(true, $user->active);
     }
+
+    public function testSequenceDefaultsNull()
+    {
+        // Create a stub for the SomeClass class.
+        $db = $this->getMockBuilder('Doctrine\DBAL\Connection')
+            ->disableOriginalConstructor()
+            ->getMock();
+        $db->method('lastInsertId')->with(null);
+
+        $dao = new UserDao ($db);
+        $dao->setData(["username" => "seq"]);
+        $dao->insert();
+    }
+    
+    public function testSequenceName()
+    {
+        // Create a stub for the SomeClass class.
+        $db = $this->getMockBuilder('Doctrine\DBAL\Connection')
+            ->disableOriginalConstructor()
+            ->getMock();
+        $db->method('lastInsertId')->with("test_seq");
+
+        $dao = new UserSequenceDao ($db);
+        $dao->setData(["username" => "seq"]);
+        $dao->insert();
+    }
 }
