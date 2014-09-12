@@ -5,6 +5,9 @@
     "keywords": ["css","assetic","database","db","dao","model","symfony","silex"],
     "homepage": "https://github.com/lastzero/sympathy",
     "license": "MIT",
+    "config": {
+        "bin-dir": "bin/"
+    },
     "authors": [
         {
             "name": "Michael Mayer",
@@ -25,7 +28,8 @@
         "natxet/CssMin": "dev-master",
         "symfony/translation": "~2.3",
         "symfony/validator": "~2.3",
-        "kriswallsmith/assetic": "~1.1"
+        "kriswallsmith/assetic": "~1.1",
+        "phpunit/phpunit": "@stable"
     },
     "autoload": {
         "psr-0": { "Sympathy": "src/" }
