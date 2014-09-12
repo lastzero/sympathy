@@ -23,6 +23,7 @@ abstract class Entity extends Dao
     private $_originalData = array(); // Property cache (equals $_data after calling find() or update())
 
     protected $_tableName = ''; // Database table name
+    protected $_idSequenceName; // Sequence name used when inserting (null for mysql)
     protected $_primaryKey = 'id'; // Name of primary key column
     protected $_fieldMap = array(); // 'db_column' => 'object_property'
     protected $_formatMap = array(); // 'db_column' => Format::TYPE
@@ -284,7 +285,7 @@ abstract class Entity extends Dao
 
         if (!is_array($this->_primaryKey) && !isset($this->_data[$this->_primaryKey])) {
             // Entity has no primary key yet and primary key is not a compound key (must be manually set)
-            $insertFields[$this->_primaryKey] = $db->lastInsertId();
+            $insertFields[$this->_primaryKey] = $db->lastInsertId($this->_idSequenceName);
         }
 
         $this->_data = $insertFields;
