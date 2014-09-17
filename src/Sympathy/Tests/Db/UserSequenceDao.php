@@ -12,5 +12,5 @@ use Sympathy\Db\Format;
  */
 class UserSequenceDao extends UserDao
 {
-    protected $_idSequenceName = "test_seq";
+    protected $_primaryKeySequence = "test_seq";
 }
