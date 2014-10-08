@@ -26,6 +26,14 @@ class Format
     const DATETIME = 'Y-m-d H:i:s';
     const TIMESTAMP = 'U';
 
+    /**
+     * Converts data from sql data source
+     *
+     * @param string $format
+     * @param mixed $data
+     * @throws FormatException
+     * @return mixed
+     */
     public static function fromSql($format, $data = null)
     {
         if ($data === null) {
@@ -59,6 +67,14 @@ class Format
         }
     }
 
+    /**
+     * Converts data to sql format
+     *
+     * @param string $format
+     * @param mixed $data
+     * @throws FormatException
+     * @return mixed
+     */
     public static function toSql($format, $data = null)
     {
         if ($data === null) {
