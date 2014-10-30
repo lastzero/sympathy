@@ -59,3 +59,33 @@ class UserForm extends Form {
     }
 }
 ```
+
+Validation in REST Controller action context
+--------------------------------------------
+```
+class UserController
+{
+    protected $user;
+    protected $form;
+
+    public function __construct(User $user, UserForm $form)
+    {
+        $this->user = $user;
+        $this->form = $form;
+    }
+    
+    public function putAction($id, Request $request)
+    {
+        $this->user->find($id);
+        $this->form->setDefinedWritableValues($request->request->all())->validate();
+
+        if($this->form->hasErrors()) {
+            throw new FormInvalidException($this->form->getFirstError());
+        } else {
+            $this->user->update($this->form->getValues());
+        }
+
+        return $this->user->getValues();
+    }
+}
+```
