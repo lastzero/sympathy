@@ -31,7 +31,7 @@ use DateTime;
  * readonly             User is not allowed to change the field
  * hidden               User can not see the field
  * default              Default value
- * checkbox             A checkbox-like form input element is used (the form class will assign false for
+ * optional             A checkbox-like form input element is used (the form class will assign false for
  *                      boolean fields or array() for lists, if the value is not passed to setDefinedValues()
  *                      or setDefinedWritableValues()). This is a work around, because browsers do not submit
  *                      any data for unchecked checkboxes or multi-select fields without a selected element.
@@ -413,16 +413,18 @@ class Form
     }
 
     /**
-     * Returns true, if the field is a checkbox
+     * Returns true, if the field is optional
      *
-     * This is a workaround for Web form elements, that do not get submitted, if empty
+     * This is a workaround for Web form elements, that do not get submitted, if empty.
+     * In general, this applies to non-checked checkboxes or to empty form elements
+     * submitted by certain JavaScript frameworks (e.g. AngularJS).
      *
      * @param $key string
      * @return bool
      */
-    protected function isCheckbox($key)
+    protected function isOptional($key)
     {
-        return $this->getDefinition($key, 'checkbox') == true;
+        return ($this->getDefinition($key, 'checkbox') == true) || ($this->getDefinition($key, 'optional') == true);
     }
 
     /**
@@ -432,9 +434,9 @@ class Form
      * @param $values array Reference to the array containing all form values
      * @return $this
      */
-    protected function setCheckboxValueInArray($key, &$values)
+    protected function setOptionalValueInArray($key, &$values)
     {
-        if ($this->isCheckbox($key) && !array_key_exists($key, $values)) {
+        if ($this->isOptional($key) && !array_key_exists($key, $values)) {
             $type = $this->getDefinition($key, 'type');
             switch ($type) {
                 case 'list':
@@ -477,7 +479,7 @@ class Form
     public function setDefinedValues(array $values)
     {
         foreach ($this->_definition as $key => $value) {
-            $this->setCheckboxValueInArray($key, $values);
+            $this->setOptionalValueInArray($key, $values);
 
             if (!array_key_exists($key, $values)) {
                 throw new Exception ('Array provided to setDefinedValues() was not complete: ' . $key);
@@ -518,7 +520,7 @@ class Form
     {
         foreach ($this->_definition as $key => $value) {
             if ($this->isWritable($key)) {
-                $this->setCheckboxValueInArray($key, $values);
+                $this->setOptionalValueInArray($key, $values);
 
                 if (!array_key_exists($key, $values)) {
                     throw new Exception ('Array provided to setDefinedWritableValues() was not complete: ' . $key);
@@ -545,7 +547,7 @@ class Form
     {
         foreach ($this->_definition as $key => $value) {
             if (isset($value['page']) && $value['page'] == $page && $this->isWritable($key)) {
-                $this->setCheckboxValueInArray($key, $values);
+                $this->setOptionalValueInArray($key, $values);
 
                 if (!array_key_exists($key, $values)) {
                     throw new Exception ('Array provided to setWritableValuesOnPage() was not complete: ' . $key);
