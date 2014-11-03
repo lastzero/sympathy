@@ -51,8 +51,8 @@ class UserForm extends Form {
             'lastname' => array('caption' => 'Last Name', 'type' => 'string'),
             'email' => array('caption' => 'E-Mail', 'type' => 'email'),
             'team_id' => array('caption' => 'Team ID', 'type' => 'int'),
-            'admin' => array('caption' => 'Admin', 'type' => 'bool', 'checkbox' => true),
-            'disabled' => array('caption' => 'Deactivated', 'type' => 'bool', 'checkbox' => true)
+            'admin' => array('caption' => 'Admin', 'type' => 'bool', 'optional' => true),
+            'disabled' => array('caption' => 'Deactivated', 'type' => 'bool', 'optional' => true)
         );
 
         $this->setDefinition($definition);
