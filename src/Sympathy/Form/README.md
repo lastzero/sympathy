@@ -28,7 +28,7 @@ required               | Field cannot be empty
 readonly               | User is not allowed to change the field
 hidden                 | User can not see the field
 default                | Default value
-checkbox               | A checkbox-like form input element is used (the form class will assign false for boolean fields or array() for lists, if the value is not passed to setDefinedValues() or setDefinedWritableValues()). This is a work around, because browsers do not submit any data for unchecked checkboxes or multi-select fields without a selected element.
+optional               | A checkbox-like form input element is used (the form class will assign false for boolean fields or array() for lists, if the value is not passed to setDefinedValues() or setDefinedWritableValues()). This is a work around, because browsers do not submit any data for unchecked checkboxes or multi-select fields without a selected element.
 regex                  | Regular expression to match against
 matches                | Field value must match another form field (e.g. for password or email validation). Property can be prefixed with "!" to state that the fields must be different.
 depends                | Field is required, if the given form field is not empty
