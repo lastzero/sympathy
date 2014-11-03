@@ -22,11 +22,12 @@ abstract class Entity extends Dao
     private $_data = array(); // Property cache
     private $_originalData = array(); // Property cache (equals $_data after calling find() or update())
 
-    protected $_tableName = ''; // Name of the primary database table
-    protected $_primaryKey = 'id'; // Name of primary key field
-    protected $_fieldMap = array(); // 'db_field' => 'object_field'
-    protected $_formatMap = array(); // 'db_field' => Format::TYPE
-    protected $_valueMap = array(); // 'object_field' => 'db_field'
+    protected $_tableName = ''; // Database table name
+    protected $_primaryKey = 'id'; // Name of primary key column
+    protected $_primaryKeySequence = null; // Sequence name used when inserting (null for mysql)
+    protected $_fieldMap = array(); // 'db_column' => 'object_property'
+    protected $_formatMap = array(); // 'db_column' => Format::TYPE
+    protected $_valueMap = array(); // 'object_property' => 'db_column'
 
     protected $_timestampEnabled = false; // Set to true to enable "updated" and "created" timestamps
     protected $_timestampCreatedCol = 'created';
@@ -185,7 +186,7 @@ abstract class Entity extends Dao
         $select->select('*');
         $select->from($this->_tableName, $alias);
 
-        if(is_array($this->_primaryKey) && count($this->_primaryKey) == 1) {
+        if (is_array($this->_primaryKey) && count($this->_primaryKey) == 1) {
             $primaryKey = $this->_primaryKey[0];
         } else {
             $primaryKey = $this->_primaryKey;
@@ -199,7 +200,7 @@ abstract class Entity extends Dao
 
                 $select->andWhere($db->quoteIdentifier($key) . ' = ' . $db->quote($val));
             }
-        } elseif(!is_array($primaryKey)) {
+        } elseif (!is_array($primaryKey)) {
             if (isset($this->_formatMap[$primaryKey])) {
                 $id = Format::toSql($this->_formatMap[$primaryKey], $id);
             }
@@ -218,6 +219,19 @@ abstract class Entity extends Dao
         $this->setData($data);
 
         return $this;
+    }
+
+    /**
+     * Reloads the entity values from database
+     *
+     * @return $this
+     * @throws NotFoundException
+     */
+    public function reload()
+    {
+        $id = $this->getWhereAsArray();
+
+        return $this->find($id);
     }
 
     /**
@@ -271,7 +285,7 @@ abstract class Entity extends Dao
 
         if (!is_array($this->_primaryKey) && !isset($this->_data[$this->_primaryKey])) {
             // Entity has no primary key yet and primary key is not a compound key (must be manually set)
-            $insertFields[$this->_primaryKey] = $db->lastInsertId();
+            $insertFields[$this->_primaryKey] = $db->lastInsertId($this->_primaryKeySequence);
         }
 
         $this->_data = $insertFields;
@@ -528,8 +542,9 @@ abstract class Entity extends Dao
      * @param string $tableName Optional table name (if different from the default)
      * @return string The default table alias (first character of the table name)
      */
-    protected function getDefaultTableAlias ($tableName = '') {
-        if($tableName == '') {
+    protected function getDefaultTableAlias($tableName = '')
+    {
+        if ($tableName == '') {
             $tableName = $this->_tableName;
         }
 
@@ -590,7 +605,7 @@ abstract class Entity extends Dao
         // Check for optional ID filters (sets; pre-defined result lists)
         if (count($params['id_filter']) > 0) {
             $select->andWhere($this->getQuotedKey($this->_primaryKey, $params['table_alias'])
-                . ' IN ('. $this->sqlImplode($params['id_filter']) .')');
+                . ' IN (' . $this->sqlImplode($params['id_filter']) . ')');
             //$select->setParameter(':id_filter', $params['id_filter']);
         }
 
@@ -620,7 +635,7 @@ abstract class Entity extends Dao
 
                 $select->join($join[0], $join[1], $join[2], $join[3]);
 
-                if(!$params['ids_only'] && isset($join[4])) {
+                if (!$params['ids_only'] && isset($join[4])) {
                     $select->addSelect($join[4]);
                 }
             }
@@ -632,7 +647,7 @@ abstract class Entity extends Dao
 
                 $select->leftJoin($join[0], $join[1], $join[2], $join[3]);
 
-                if(!$params['ids_only'] && isset($join[4])) {
+                if (!$params['ids_only'] && isset($join[4])) {
                     $select->addSelect($join[4]);
                 }
             }
@@ -664,7 +679,7 @@ abstract class Entity extends Dao
         // Optional ordering of results
         if ($params['order']) {
             if (is_array($params['order'])) {
-                foreach($params['order'] as $sortOrder) {
+                foreach ($params['order'] as $sortOrder) {
                     $select->addOrderBy($this->getOrderField($sortOrder), $this->getOrderDirection($sortOrder));
                 }
             } else {
@@ -807,10 +822,11 @@ abstract class Entity extends Dao
         return $order;
     }
 
-    protected function getOrderDirection ($sortOrder) {
+    protected function getOrderDirection($sortOrder)
+    {
         $parts = explode(' ', $sortOrder);
 
-        if(count($parts) == 2 && strtoupper($parts[1]) == 'DESC') {
+        if (count($parts) == 2 && strtoupper($parts[1]) == 'DESC') {
             $result = 'DESC';
         } else {
             $result = 'ASC';
@@ -819,7 +835,8 @@ abstract class Entity extends Dao
         return $result;
     }
 
-    protected function getOrderField ($sortOrder) {
+    protected function getOrderField($sortOrder)
+    {
         $parts = explode(' ', $sortOrder);
         $result = $parts[0];
 
@@ -912,7 +929,7 @@ abstract class Entity extends Dao
     {
         $db = $this->getDb();
 
-        if(!$indexName) {
+        if (!$indexName) {
             $indexName = $this->_primaryKey;
         }
 

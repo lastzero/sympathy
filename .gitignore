@@ -37,6 +37,7 @@ Thumbs.db
 # Framework generated files #
 #############################
 vendor/
+bin/
 composer.lock
 
 # IDE generated files #
@@ -46,6 +47,6 @@ composer.lock
 .goutputstream*
 .c9revisions
 .settings
-.swp
+.*\.swp
 .tmp
 phpunit.xml

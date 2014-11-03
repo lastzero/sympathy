@@ -15,16 +15,23 @@
     ],
     "require": {
         "php": ">=5.4",
-        "doctrine/dbal": "~2.3",
-        "lastzero/test-tools": "dev-master"
+        "doctrine/dbal": "~2.4",
+        "symfony/translation": "~2.3",
+        "symfony/validator": "~2.3",
+        "natxet/CssMin": "dev-master",
+        "lastzero/test-tools": "*"
     },
     "require-dev": {
         "natxet/CssMin": "dev-master",
         "symfony/translation": "~2.3",
         "symfony/validator": "~2.3",
-        "kriswallsmith/assetic": "~1.1"
+        "kriswallsmith/assetic": "~1.1",
+        "phpunit/phpunit": "@stable"
     },
     "autoload": {
         "psr-0": { "Sympathy": "src/" }
+    },
+    "config": {
+        "bin-dir": "bin/"
     }
 }
