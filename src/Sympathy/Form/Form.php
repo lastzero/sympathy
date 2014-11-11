@@ -460,7 +460,7 @@ class Form
      * @param $values array The values (key must be the field name)
      * @return $this
      */
-    public function setAllValues(Array $values)
+    public function setAllValues(array $values)
     {
         foreach ($values as $key => $value) {
             $this->$key = $value;
