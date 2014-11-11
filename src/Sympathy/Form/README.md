@@ -124,7 +124,7 @@ class UserController
         if($this->form->isValid()) {
             $this->user->update($this->form->getValues()); // Update values
         } else {
-            // Return first error, since HTTP isn't desinged to return multiple errors at once
+            // Return first error, since HTTP isn't designed to return multiple errors at once
             throw new FormInvalidException($this->form->getFirstError());
         }
 
