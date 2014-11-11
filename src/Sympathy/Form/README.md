@@ -111,23 +111,24 @@ class UserController
         $this->form = $form;
     }
     
-    public function putAction($id, Request $request)
+    public function putAction($id, Request $request) // Update
     {
-        $this->user->find($id);
+        $this->user->find($id); // Find entity (throws exception, if not found)
         
-        $this->form->setDefinedValues($this->user->getValues()); // Initialization (optional)
+        $this->form->setDefinedValues($this->user->getValues()); // Initialization
         
-        $this->form->setDefinedWritableValues($request->request->all());
+        $this->form->setDefinedWritableValues($request->request->all()); // Input values
         
-        $this->form->validate();
+        $this->form->validate(); // Validation
 
         if($this->form->isValid()) {
-            $this->user->update($this->form->getValues());
+            $this->user->update($this->form->getValues()); // Update values
         } else {
+            // Return first error, since HTTP isn't desinged to return multiple errors at once
             throw new FormInvalidException($this->form->getFirstError());
         }
 
-        return $this->user->getValues();
+        return $this->user->getValues(); // Return updated entity values
     }
 }
 ```
