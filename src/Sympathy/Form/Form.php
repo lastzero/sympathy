@@ -764,6 +764,16 @@ class Form
     }
 
     /**
+     * Returns true, if the form is valid (has no errors)
+     *
+     * @return bool
+     */
+    public function isValid()
+    {
+        return !$this->hasErrors();
+    }
+
+    /**
      * Returns all errors and throws an exception, if the validation was not done yet
      * Note: You must call validate() before getErrors()
      *

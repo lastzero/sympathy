@@ -204,6 +204,9 @@ class FormTest extends UnitTestCase
         $this->assertArrayHasKey(3, $errors);
         $this->assertEquals(1, count($errors));
         $this->assertEquals(1, count($errors[3]['bar']));
+        $this->assertFalse($this->form->isValid());
+        $this->assertTrue($this->form->hasErrors());
+
     }
 
     public function testSetWritableValuesOnPageError()
@@ -431,6 +434,8 @@ class FormTest extends UnitTestCase
         $errors = $this->form->getErrors();
 
         $this->assertEquals(0, count($errors));
+        $this->assertTrue($this->form->isValid());
+        $this->assertFalse($this->form->hasErrors());
     }
 
     public function testDefinedWritableValuesSuccess()
