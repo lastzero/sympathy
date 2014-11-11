@@ -1,17 +1,11 @@
-Sympathy Form validates user input of any origin (POST data, CLI or SOAP/REST)
-==============================================================================
+Sympathy Form validates user input of any origin (HTML forms, REST, RPC)
+========================================================================
 
-The form classes return localized validation messages and pass on the form definition
-to controllers that render the forms to HTML using view templates and interact with
-models (see \Sympathy\Model).
+Sympathy Form is a value container with built-in validation. It uses language independent validation rules (plain array) that can be reused for client-side validation (JavaScript) or passed to template rendering engines such as Twig or Smarty (HTML). Sympathy Form can be used with any framework (controller and model independent).
 
-A major advantage of this modular approach is that developers can use unit testing to instantly
-find bugs and tune the validation rules without the need for an HTML front-end and manual user input.
+A major advantage of this modular approach is that developers can use unit testing to instantly find bugs and tune the validation rules without an existing HTML front-end or manual user input.
 
-Form classes can inherit their definitions from each other. If needed, the validation behavior
-can be changed using standard object-oriented methodologies (e.g. overwriting or extending
-the parent methods).
-
+Form classes can inherit their definitions from each other. If needed, the validation behavior can be changed using standard object-oriented methodologies (e.g. overwriting or extending the parent methods).
 
 Form field properties
 ---------------------
