@@ -22,7 +22,7 @@ min                    | Minimum value for numbers/dates, length for strings or 
 max                    | Maximum value for numbers/dates, length for strings or number of elements for lists
 required               | Field cannot be empty (if false, setDefinedValues() and setDefinedWritableValues() still throw an exception, if it does not exist at all)
 optional               | setDefinedValues() and setDefinedWritableValues() don't throw an exception, if the field is missing in the input values (usefull for checkboxes or certain JavaScript frameworks, that do not submit any data for empty form elements e.g. AngularJS)
-readonly               | User is not allowed to change the field
+readonly               | User is not allowed to change the field (not writable)
 hidden                 | User can not see the field
 default                | Default value
 regex                  | Regular expression to match against
@@ -33,6 +33,7 @@ depends_value_empty    | Field is required, if the field defined in "depends" is
 depends_first_option   | Field is required, if the field defined in "depends" has the first value (see "options")
 depends_last_option    | Field is required, if the field defined in "depends" has the last value (see "options")
 page                   | Page number for multi-page forms
+tags                   | Optional list of tags (can be used to extract values by tag, see getValuesByTag())
 
 Example
 -------
@@ -92,6 +93,157 @@ class UserForm extends Form {
     }
 }
 ```
+
+Public methods
+--------------
+
+**__construct(Translator $translator, Validator $validator, array $params = array())**
+
+The constructor requires instances of Symfony\Component\Translation\TranslatorInterface, Sympathy\Form\Validator and an optional set of arbitrary parameters, which are passed to **init(array $params = array())** (protected class method).
+
+**factory($className, array $params = array())**
+
+Creates a new form instance (with an optional set of arbitrary parameters for init() - see __construct()). $className must not include a prefix (e.g. namespace) and postfix (e.g. 'Form'), if $_factoryPrefix and $_factoryPostfix are set (protected class properties).
+
+**setOptions(OptionsInterface $options)**
+
+Sets an optional class instance to automatically fill option lists (see "options" form field property). OptionsInterface only requires a method get($listName) that returns an array of options.
+
+**getOptions($listName = '')**
+
+Returns the options list or instance (if parameter is empty)
+
+**getTranslator()**
+
+Returns the Translator instance (see __construct)
+
+**setTranslator(Translator $translator)**
+
+Sets the Translator instance (see __construct)
+
+**getValidator()**
+
+Returns the Validator instance (see __construct)
+
+**setValidator(Validator $validator)**
+
+Sets the Validator instance (see __construct)
+
+**getLocale()**
+
+Returns the current locale e.g. en, de or fr
+
+**setLocale($locale)**
+
+Sets the current locale e.g. en, de or fr
+
+**setDefinition(array $definition)**
+
+Sets the form field definition array (see example and form field properties)
+
+**getDefinition($key = null, $propertyName = null)**
+
+Returns the form field definition(s). If $key is null, definitions for all fields are returned. If $propertyName is null and $key is not null, only the definition of the given field key are returned. If both arguments are not null, only the definition of the given form field property is returned (for example, getDefinition('firstname', 'type') returns 'string'). A Sympathy\Form\Exception is thrown otherwise.
+
+**addDefinition($key, array $definition)**
+
+Adds a single form field definition (see form field properties)
+
+**changeDefinition($key, array $changes)**
+
+Changes a single form field definition (see form field properties)
+
+**getAsArray()**
+
+Returns the complete form (definition + values) as array, which can be used in the view templates to render the form or be converted to JSON/XML for Web services (REST/RPC).
+
+**getAsGroupedArray()**
+
+Returns form fields structured in groups (you must use setGroups() first)
+
+**setAllValues(Array $values)**
+
+Sets all form values (does not check, if the fields exist or if the fields are writable by the user). Throws an exception, if you try to set values for undefined fields.
+
+**setDefinedValues(array $values)**
+
+Iterates through the form definition and sets the values for fields, that are present in the form definition.
+
+**setWritableValues(array $values)**
+
+Iterates through the passed value array and sets the values for fields, that are writable by the user.
+
+**setDefinedWritableValues(array $values)**
+
+Sets the values for fields, that are present in the form definition and that are writable by the user (recommended method for most use cases).
+
+**setWritableValuesOnPage(array $values, $page)**
+
+Sets the values for fields on the given page, that are present in the form definition and that are writable by the user (recommended method for most use cases, if the form contains multiple pages).
+
+**getValuesByPage()**
+
+Returns the form values for all elements grouped by page.
+
+**getValuesByTag($tag)**
+
+Returns the form values for all elements by tag (see "tags" form field property)
+
+**getValues()**
+
+Returns all form field values
+
+**getWritableValues()**
+
+Returns all user writable form field values
+
+**translate($token, array $params = array())**
+
+Uses the Translator adapter to translate the given string/token (accepts optional parameters for the translation string).
+
+**_($token, array $params = array())**
+
+Alias for translate()
+
+**addError($key, $token, array $params = array())**
+
+Adds a validation error (uses translate() for the error message internally)
+
+**validate()**
+
+Validates all form field values. You can use getErrors(), getErrorsByPage(), isValid() and hasErrors() to get the validation results.
+
+**hasErrors()**
+
+Returns true, if the form has errors
+
+**isValid()**
+
+eturns true, if the form is valid (has no errors)
+
+**getErrors()**
+
+Returns all errors and throws an exception, if the validation was not performed yet (you must call validate() before calling getErrors()).
+
+**getFirstError()**
+
+Returns the first error as string
+
+**getErrorsAsText()**
+
+Returns all errors as indented text (for command line applications)
+
+**getErrorsByPage()**
+
+Returns all errors grouped by page and throws an exception, if the validation was not performed yet (you must call validate() before calling getErrorsByPage()).
+
+**clearErrors()**
+
+Resets the validation and clears all errors
+
+**getHash()**
+
+Returns unique form hash to uniquely identify the form (can be used to implement form caching).
 
 Validation in REST Controller action context
 --------------------------------------------
