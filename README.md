@@ -8,4 +8,4 @@ Components for the Symfony Ecosystem
 This library provides the following components:
 * [Sympathy Form - A value container with built-in whitelist validation](https://github.com/lastzero/sympathy/tree/master/src/Sympathy/Form)
 * [Sympathy DB - Object-oriented CRUD for Doctrine DBAL](https://github.com/lastzero/sympathy/tree/master/src/Sympathy/Db)
-* [CSS Optimizer](https://github.com/lastzero/sympathy/tree/master/src/Sympathy/Css) that reduces your code size by removing duplicates and combining selectors (includes CssOptimizeFilter for Assetic)
+* [CSS Optimizer](https://github.com/lastzero/sympathy/tree/master/src/Sympathy/Css) that minifies CSS stylesheets by removing duplicates and combining selectors (includes CssOptimizeFilter for Assetic)
