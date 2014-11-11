@@ -185,7 +185,7 @@ class Form
      * @param $groups array The group definition array
      * @return $this
      */
-    protected function setGroups(array $groups)
+    public function setGroups(array $groups)
     {
         $this->_groups = $groups;
 
@@ -428,7 +428,7 @@ class Form
     }
 
     /**
-     * Sets the default types for values of form fields marked as checkboxes
+     * Sets the default types for values of form fields marked as optional
      *
      * @param $key string The field name
      * @param $values array Reference to the array containing all form values
@@ -470,7 +470,7 @@ class Form
     }
 
     /**
-     * Interates through the form definition and sets the values for fields, that are present in the form definition
+     * Iterates through the form definition and sets the values for fields, that are present in the form definition
      *
      * @param $values array The values (key must be the field name)
      * @throws Exception
@@ -492,7 +492,7 @@ class Form
     }
 
     /**
-     * Interates through the passed value array and sets the values for fields, that are writable by the user
+     * Iterates through the passed value array and sets the values for fields, that are writable by the user
      *
      * @param $values array The values (key must be the field name)
      * @return $this
@@ -582,7 +582,7 @@ class Form
     }
 
     /**
-     * Returns the form values for all elements grouped by tag
+     * Returns the form values for all elements by tag
      *
      * @return array
      */
@@ -852,7 +852,7 @@ class Form
 
     /**
      * Returns all errors grouped by page and throws an exception, if the validation was not done yet
-     * Note: You must call validate() before getErrors()
+     * Note: You must call validate() before getErrorsByPage()
      *
      * @return array
      */
