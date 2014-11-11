@@ -175,7 +175,7 @@ $form->setGroups(
 
 Returns the complete form (definition + values) as array, which can be used in the view templates to render the form or be converted to JSON/XML for Web services (REST/RPC).
 
-**setAllValues(Array $values)**
+**setAllValues(array $values)**
 
 Sets all form values (does not check, if the fields exist or if the fields are writable by the user). Throws an exception, if you try to set values for undefined fields.
 
