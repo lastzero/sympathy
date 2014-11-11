@@ -153,13 +153,27 @@ Adds a single form field definition (see form field properties)
 
 Changes a single form field definition (see form field properties)
 
+**getAsGroupedArray()**
+
+Returns grouped form field definitions and values (you must use setGroups() first)
+
+**setGroups(array $groups)**
+
+Sets form field groups (optional feature, if you want to reuse your form definition to reder the form as HTML).
+
+Example:
+```
+$form->setGroups(
+  array(
+    'first_group' => array('field1', 'field2'),
+    'second_group' => array('field3')
+  )
+);
+```
+
 **getAsArray()**
 
 Returns the complete form (definition + values) as array, which can be used in the view templates to render the form or be converted to JSON/XML for Web services (REST/RPC).
-
-**getAsGroupedArray()**
-
-Returns form fields structured in groups (you must use setGroups() first)
 
 **setAllValues(Array $values)**
 
