@@ -24,11 +24,11 @@ type_params            | Optional parameters for data type validation
 options                | Array of possible values for the field (for select lists or radio button groups)
 min                    | Minimum value for numbers/dates, length for strings or number of elements for lists
 max                    | Maximum value for numbers/dates, length for strings or number of elements for lists
-required               | Field cannot be empty
+required               | Field cannot be empty (if false, setDefinedValues() and setDefinedWritableValues() still throw an exception, if it does not exist at all)
+optional               | setDefinedValues() and setDefinedWritableValues() don't throw an exception, if the field is missing in the input values (usefull for checkboxes or certain JavaScript frameworks, that do not submit any data for empty form elements e.g. AngularJS)
 readonly               | User is not allowed to change the field
 hidden                 | User can not see the field
 default                | Default value
-optional               | setDefinedValues() and setDefinedWritableValues() don't throw an exception, if the field is missing in the input values (usefull for checkboxes or certain JavaScript frameworks, that do not submit any data for empty form elements e.g. AngularJS)
 regex                  | Regular expression to match against
 matches                | Field value must match another form field (e.g. for password or email validation). Property can be prefixed with "!" to state that the fields must be different.
 depends                | Field is required, if the given form field is not empty
@@ -47,12 +47,49 @@ class UserForm extends Form {
     protected function init(array $params = array())
     {
         $definition = array(
-            'firstname' => array('caption' => 'First Name', 'type' => 'string'),
-            'lastname' => array('caption' => 'Last Name', 'type' => 'string'),
-            'email' => array('caption' => 'E-Mail', 'type' => 'email'),
-            'team_id' => array('caption' => 'Team ID', 'type' => 'int'),
-            'admin' => array('caption' => 'Admin', 'type' => 'bool', 'optional' => true),
-            'disabled' => array('caption' => 'Deactivated', 'type' => 'bool', 'optional' => true)
+            'username': {
+                type: 'string',
+                caption: 'Username',
+                required: true,
+                min: 3,
+                max: 15
+            },
+            'email': {
+                type: 'email',
+                caption: 'E-Mail',
+                required: true
+            },
+            'gender': {
+                type: 'string',
+                caption: 'Gender',
+                required: false,
+                options: ['male', 'female'],
+                optional: true
+            },
+            'birthday': {
+                type: 'date',
+                caption: 'Birthday',
+                required: false
+            },
+            'password': {
+                type: 'string',
+                caption: 'Password',
+                required: true,
+                min: 5,
+                max: 30
+            },
+            'password_again': {
+                type: 'string',
+                caption: 'Password confirmation',
+                required: true,
+                matches: 'password'
+            },
+            'continent': {
+                type: 'string',
+                caption: 'Region',
+                required: true,
+                options: ['north_america', 'south_america', 'europe', 'asia', 'australia']
+            }
         );
 
         $this->setDefinition($definition);
@@ -77,12 +114,17 @@ class UserController
     public function putAction($id, Request $request)
     {
         $this->user->find($id);
-        $this->form->setDefinedWritableValues($request->request->all())->validate();
+        
+        $this->form->setDefinedValues($this->user->getValues()); // Initialization (optional)
+        
+        $this->form->setDefinedWritableValues($request->request->all());
+        
+        $this->form->validate();
 
-        if($this->form->hasErrors()) {
-            throw new FormInvalidException($this->form->getFirstError());
-        } else {
+        if($this->form->isValid()) {
             $this->user->update($this->form->getValues());
+        } else {
+            throw new FormInvalidException($this->form->getFirstError());
         }
 
         return $this->user->getValues();
