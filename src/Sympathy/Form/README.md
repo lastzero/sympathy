@@ -257,7 +257,7 @@ Resets the validation and clears all errors
 
 **getHash()**
 
-Returns hash that uniquely identifies the form (for caching)
+Returns hash that uniquely identifies the form (for caching comprehensive forms)
 
 Validation in REST controller action context
 --------------------------------------------
