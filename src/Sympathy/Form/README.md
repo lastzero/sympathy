@@ -7,6 +7,8 @@ A major advantage of this modular approach is that developers can use unit testi
 
 Form classes can inherit their definitions from each other. If needed, the validation behavior can be changed using standard object-oriented methodologies (e.g. overwriting or extending the parent methods).
 
+See also: [Sympathy DB](https://github.com/lastzero/sympathy/tree/master/src/Sympathy/Db) (Object-oriented CRUD for Doctrine DBAL)
+
 Form field properties
 ---------------------
 
