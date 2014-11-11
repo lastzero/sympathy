@@ -3,7 +3,7 @@ Sympathy DB: Object-oriented CRUD for Doctrine DBAL
 
 The Sympathy Model and Database Access Object (DAO) classes encapsulate Doctrine DBAL to provide high-performance, object-oriented CRUD (create, read, update, delete) functionality for relational databases.
 
-![Architecture](https://lastzero.net/wp-content/uploads/2014/08/sympathy_db.png)
+![Architecture](https://www.lucidchart.com/publicSegments/view/5461d17e-f5a8-4166-9e43-47200a00dd77/image.png)
 
 *Note: This is not an ORM (object-relational mapping) framework and there are no requirements to the underlying database structure.*
 
