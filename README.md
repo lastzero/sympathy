@@ -2,6 +2,8 @@ Components for the Symfony Ecosystem
 ====================================
 
 [![Build Status](https://travis-ci.org/lastzero/sympathy.png?branch=master)](https://travis-ci.org/lastzero/sympathy)
+[![Total Downloads](https://poser.pugx.org/lastzero/sympathye/downloads.svg)](https://packagist.org/packages/lastzero/symlex-core)
+[![License](https://poser.pugx.org/lastzero/sympathy/license.svg)](https://packagist.org/packages/lastzero/symlex-core)
 
 This library provides the following components:
 * CSS optimizer that reduces your code size by removing duplicates and combining selectors (includes CssOptimizeFilter for Assetic)
