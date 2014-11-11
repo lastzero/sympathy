@@ -89,3 +89,9 @@ class UserController
     }
 }
 ```
+
+Form Validation vs Model Validation
+-----------------------------------
+The following visualization highlights the differences between client-side, input value (form) and model validation. In general, model validation works on trusted data (internal system state) while input validation explicitly operates on data that comes from external sources (depending on the use case and user privileges). A complex system always has more internal state than it exposes to the outside, thus it is never sufficient to use model validation only (exept the model API provides two sets of methods - some that are used internally and some that are exposed as public API; that makes model code more difficult to manage and mistakes may easily lead to security flaws).
+
+![Differences between client-side, input value (form) and model validation](https://www.lucidchart.com/publicSegments/view/5461c6ec-2c64-46b2-a1f1-19aa0a00cf27/image.png)
