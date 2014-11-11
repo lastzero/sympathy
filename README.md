@@ -2,6 +2,7 @@ Components for the Symfony Ecosystem
 ====================================
 
 [![Build Status](https://travis-ci.org/lastzero/sympathy.png?branch=master)](https://travis-ci.org/lastzero/sympathy)
+[![Latest Stable Version](https://poser.pugx.org/lastzero/sympathy/v/stable.svg)](https://packagist.org/packages/lastzero/sympathy)
 [![Total Downloads](https://poser.pugx.org/lastzero/sympathy/downloads.svg)](https://packagist.org/packages/lastzero/sympathy)
 [![License](https://poser.pugx.org/lastzero/sympathy/license.svg)](https://packagist.org/packages/lastzero/sympathy)
 
