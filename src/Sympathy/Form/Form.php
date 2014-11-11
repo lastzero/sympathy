@@ -582,6 +582,26 @@ class Form
     }
 
     /**
+     * Returns the form values for all elements grouped by tag
+     *
+     * @return array
+     */
+    public function getValuesByTag($tag)
+    {
+        $result = array();
+
+        foreach ($this->_definition as $key => $value) {
+            $tags = $this->getDefinition($key, 'tags');
+
+            if (is_array($tags) && in_array($tag, $tags)) {
+                $result[$key] = $this->$key;
+            }
+        }
+
+        return $result;
+    }
+
+    /**
      * Returns all form field values
      *
      * @return array

@@ -763,4 +763,58 @@ class FormTest extends UnitTestCase
 
         $this->assertInternalType('array', $form);
     }
+
+    public function testGetValuesByTag()
+    {
+        $this->form->setDefinition(
+            array(
+                'firstname' => array(
+                    'type' => 'string',
+                    'min' => 2,
+                    'max' => 10,
+                    'caption' => 'Vorname',
+                    'tags' => ['user']
+                ),
+                'email' => array(
+                    'type' => 'email',
+                    'tags' => ['user', 'example']
+                ),
+                'other' => array(
+                    'type' => 'string',
+                    'required' => true,
+                    'tags' => ['other']
+                )
+            )
+        );
+
+        $values = array(
+            'firstname' => 'Michael',
+            'email' => 'xyz@ibm.com',
+            'other' => 'foo'
+        );
+
+        $this->form->setDefinedWritableValues($values);
+
+        $this->form->validate();
+
+        $this->assertEquals('Michael', $this->form->firstname);
+
+        $errors = $this->form->getErrors();
+
+        $this->assertEquals(0, count($errors));
+        $this->assertTrue($this->form->isValid());
+        $this->assertFalse($this->form->hasErrors());
+
+        $tagOther = $this->form->getValuesByTag('other');
+        $tagOtherExpected = array('other' => 'foo');
+        $this->assertEquals($tagOtherExpected, $tagOther);
+
+        $tagUser = $this->form->getValuesByTag('user');
+        $tagUserExpected = array('firstname' => 'Michael', 'email' => 'xyz@ibm.com');
+        $this->assertEquals($tagUserExpected, $tagUser);
+
+        $tagExample = $this->form->getValuesByTag('example');
+        $tagExampleExpected = array('email' => 'xyz@ibm.com');
+        $this->assertEquals($tagExampleExpected, $tagExample);
+    }
 }
