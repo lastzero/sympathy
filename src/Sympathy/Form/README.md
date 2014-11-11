@@ -259,8 +259,11 @@ Resets the validation and clears all errors
 
 Returns unique form hash to uniquely identify the form (can be used to implement form caching).
 
-Validation in REST Controller action context
+Validation in REST controller action context
 --------------------------------------------
+
+This example shows how to validate user input in a REST controller action (note that HTTP doesn't support multiple error messages by default and that form initialization using existing model values is optional):
+
 ```
 class UserController
 {
