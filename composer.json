@@ -5,6 +5,9 @@
     "keywords": ["css","assetic","database","db","dao","model","symfony","silex"],
     "homepage": "https://github.com/lastzero/sympathy",
     "license": "MIT",
+    "config": {
+        "bin-dir": "bin/"
+    },
     "authors": [
         {
             "name": "Michael Mayer",
