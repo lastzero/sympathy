@@ -23,8 +23,6 @@
     },
     "require-dev": {
         "natxet/CssMin": "dev-master",
-        "symfony/translation": "~2.3",
-        "symfony/validator": "~2.3",
         "kriswallsmith/assetic": "~1.1",
         "phpunit/phpunit": "@stable"
     },
