@@ -565,6 +565,7 @@ abstract class Entity extends Dao
             'cond' => array(),
             'count' => 20,
             'offset' => 0,
+            'count_total' => true, // Count total number of rows
             'join' => false,
             'left_join' => false,
             'columns' => false,
@@ -669,7 +670,9 @@ abstract class Entity extends Dao
 
         if ($params['count']) {
             $select->setMaxResults($params['count'])->setFirstResult($params['offset']);
+        }
 
+        if ($params['count_total']) {
             $countSelect->from($params['table'], $params['table_alias']);
             $countSelect->select(array('COUNT(*) AS count'));
 
@@ -713,7 +716,7 @@ abstract class Entity extends Dao
             'order' => $params['order'],
             'count' => $params['count'],
             'offset' => $params['offset'],
-            'total' => $params['count'] ? $count : count($rows),
+            'total' => $params['count_total'] ? $count : count($rows),
             'filter_sql' => (string)$filterSelect,
             'sql' => $select,
             'table_pk' => $primaryKey,
