@@ -687,12 +687,14 @@ abstract class Entity extends Dao
             }
         }
 
+        $select = $this->optimizeSearchQuery($select);
+
         if ($params['ids_only']) {
             // Fetch all result ids from the first column of the result set
-            $rows = $this->fetchCol($this->optimizeSearchQuery($select));
+            $rows = $this->fetchCol($select);
         } else {
             // Fetch all result rows and optionally wrap them in DAO objects (strongly recommended)
-            $rows = $this->fetchAll($this->optimizeSearchQuery($select));
+            $rows = $this->fetchAll($select);
 
             if ($params['wrap']) {
                 $rows = $this->wrapAll($rows);
@@ -713,7 +715,7 @@ abstract class Entity extends Dao
             'offset' => $params['offset'],
             'total' => $params['count'] ? $count : count($rows),
             'filter_sql' => (string)$filterSelect,
-            'sql' => (string)$select,
+            'sql' => $select,
             'table_pk' => $primaryKey,
             'table_alias' => $params['table_alias']
         );
@@ -727,8 +729,9 @@ abstract class Entity extends Dao
      * @param mixed $query
      * @return string
      */
-    protected function optimizeSearchQuery ($query) {
-        $result = (string) $query;
+    protected function optimizeSearchQuery($query)
+    {
+        $result = (string)$query;
         return $result;
     }
 
