@@ -673,7 +673,7 @@ abstract class Entity extends Dao
             $countSelect->from($params['table'], $params['table_alias']);
             $countSelect->select(array('COUNT(*) AS count'));
 
-            $count = $this->fetchOne($countSelect);
+            $count = $this->fetchOne($this->optimizeSearchQuery($countSelect));
         }
 
         // Optional ordering of results
@@ -689,10 +689,10 @@ abstract class Entity extends Dao
 
         if ($params['ids_only']) {
             // Fetch all result ids from the first column of the result set
-            $rows = $this->fetchCol($select);
+            $rows = $this->fetchCol($this->optimizeSearchQuery($select));
         } else {
             // Fetch all result rows and optionally wrap them in DAO objects (strongly recommended)
-            $rows = $this->fetchAll($select);
+            $rows = $this->fetchAll($this->optimizeSearchQuery($select));
 
             if ($params['wrap']) {
                 $rows = $this->wrapAll($rows);
@@ -718,6 +718,17 @@ abstract class Entity extends Dao
             'table_alias' => $params['table_alias']
         );
 
+        return $result;
+    }
+
+    /**
+     * Override to manually optimize SQL created by Doctrine DBAL QueryBuilder
+     *
+     * @param mixed $query
+     * @return string
+     */
+    protected function optimizeSearchQuery ($query) {
+        $result = (string) $query;
         return $result;
     }
 
