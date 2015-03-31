@@ -817,4 +817,48 @@ class FormTest extends UnitTestCase
         $tagExampleExpected = array('email' => 'xyz@ibm.com');
         $this->assertEquals($tagExampleExpected, $tagExample);
     }
+
+    public function testConvertToBool()
+    {
+        $this->form->setDefinition(
+            array(
+                'wahr' => array(
+                    'type' => 'bool'
+                ),
+                'falsch' => array(
+                    'type' => 'bool'
+                ),
+                'default' => array(
+                    'type' => 'bool',
+                    'default' => null
+                )
+            )
+        );
+
+        $values = array('wahr' => 1, 'falsch' => 0);
+        $this->form->setWritableValues($values);
+        $this->assertTrue($this->form->wahr);
+        $this->assertFalse($this->form->falsch);
+        $this->assertNull($this->form->default);
+
+        $values = array('wahr' => 'yes', 'falsch' => 'no');
+        $this->form->setWritableValues($values);
+        $this->assertTrue($this->form->wahr);
+        $this->assertFalse($this->form->falsch);
+
+        $values = array('wahr' => 'true', 'falsch' => 'false');
+        $this->form->setWritableValues($values);
+        $this->assertTrue($this->form->wahr);
+        $this->assertFalse($this->form->falsch);
+
+        $values = array('wahr' => true, 'falsch' => false);
+        $this->form->setWritableValues($values);
+        $this->assertTrue($this->form->wahr);
+        $this->assertFalse($this->form->falsch);
+
+        $values = array('wahr' => true, 'falsch' => null);
+        $this->form->setWritableValues($values);
+        $this->assertTrue($this->form->wahr);
+        $this->assertFalse($this->form->falsch);
+    }
 }

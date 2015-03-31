@@ -99,7 +99,7 @@ class Form
      */
     public function factory($className, array $params = array())
     {
-        $className = $this->_factoryPrefix . '\\' .$className . $this->_factoryPostfix;
+        $className = $this->_factoryPrefix . '\\' . $className . $this->_factoryPostfix;
 
         $result = new $className ($this->getTranslator(), $this->getValidator(), $params);
 
@@ -636,6 +636,32 @@ class Form
     }
 
     /**
+     * @param mixed $value
+     * @return bool
+     */
+    protected function convertValueToBool($value)
+    {
+        if (is_bool($value)) {
+            return $value;
+        }
+
+        $value = (string)$value;
+
+        switch ($value) {
+            case '1':
+            case 'yes':
+            case 'true':
+                return true;
+            case '0':
+            case 'no':
+            case 'false':
+                return false;
+            default:
+                return (bool)$value;
+        }
+    }
+
+    /**
      * Magic setter
      */
     public function __set($key, $val)
@@ -647,7 +673,7 @@ class Form
             }
 
             if ($type == 'bool') {
-                $val = (bool)$val;
+                $val = $this->convertValueToBool($val);
             }
 
             if (($type == 'date' || $type == 'datetime' || $type == 'time') && !empty($val) && !is_object($val)) {
@@ -820,7 +846,7 @@ class Form
         $errors = $this->getErrors();
         $firstField = reset($errors);
 
-        if($firstField && isset($firstField[0])) {
+        if ($firstField && isset($firstField[0])) {
             $result = $firstField[0];
         }
 
