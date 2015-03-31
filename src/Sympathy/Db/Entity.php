@@ -5,6 +5,7 @@ namespace Sympathy\Db;
 use Doctrine\DBAL\Connection as Db;
 use DateTime;
 use InvalidArgumentException;
+use Doctrine\DBAL\Query\QueryBuilder;
 
 /**
  * Data Access Object for SQL database entities
@@ -586,6 +587,10 @@ abstract class Entity extends Dao
         }
 
         $db = $this->getDb();
+
+        /**
+         * @var QueryBuilder
+         */
         $select = $this->createQueryBuilder();
 
         // Build WHERE conditions
@@ -660,7 +665,7 @@ abstract class Entity extends Dao
 
         $select->from($params['table'], $params['table_alias']);
 
-        $filterSelect = clone $select;
+        $filterSelect = (string)clone $select;
 
         // Check for optional SQL filters
         if ($params['sql_filter'] != '') {
@@ -675,8 +680,10 @@ abstract class Entity extends Dao
         if ($params['count_total']) {
             $countSelect->from($params['table'], $params['table_alias']);
             $countSelect->select(array('COUNT(*) AS count'));
-
-            $count = $this->fetchOne($this->optimizeSearchQuery($countSelect));
+            $countSelect = (string)$this->optimizeSearchQuery($countSelect, $params);
+            $count = $this->fetchOne($countSelect);
+        } else {
+            $count = false;
         }
 
         // Optional ordering of results
@@ -690,7 +697,7 @@ abstract class Entity extends Dao
             }
         }
 
-        $select = $this->optimizeSearchQuery($select);
+        $select = (string)$this->optimizeSearchQuery($select, $params);
 
         if ($params['ids_only']) {
             // Fetch all result ids from the first column of the result set
@@ -716,8 +723,8 @@ abstract class Entity extends Dao
             'order' => $params['order'],
             'count' => $params['count'],
             'offset' => $params['offset'],
-            'total' => $params['count_total'] ? $count : count($rows),
-            'filter_sql' => (string)$filterSelect,
+            'total' => $count ? $count : count($rows),
+            'filter_sql' => $filterSelect,
             'sql' => $select,
             'table_pk' => $primaryKey,
             'table_alias' => $params['table_alias']
@@ -729,13 +736,13 @@ abstract class Entity extends Dao
     /**
      * Override to manually optimize SQL created by Doctrine DBAL QueryBuilder
      *
-     * @param mixed $query
-     * @return string
+     * @param QueryBuilder $query SQL query string or Query Builder instance
+     * @param array $params Search parameters (as passed to search($params))
+     * @return QueryBuilder|string
      */
-    protected function optimizeSearchQuery($query)
+    protected function optimizeSearchQuery(QueryBuilder $query, array $params)
     {
-        $result = (string)$query;
-        return $result;
+        return $query;
     }
 
     /**

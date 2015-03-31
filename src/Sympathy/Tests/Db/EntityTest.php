@@ -53,7 +53,7 @@ class EntityTest extends UnitTestCase
         $dao->setData(["username" => "seq"]);
         $dao->insert();
     }
-    
+
     public function testSequenceName()
     {
         // Create a stub for the SomeClass class.
@@ -65,5 +65,37 @@ class EntityTest extends UnitTestCase
         $dao = new UserSequenceDao ($db);
         $dao->setData(["username" => "seq"]);
         $dao->insert();
+    }
+
+    public function testSearch()
+    {
+        /**
+         * @var \Sympathy\Tests\Db\UserDao
+         */
+        $user = $this->dao->factory('User');
+
+        $params = array('cond' => array('username' => 'Foo'));
+
+        $result = $user->search($params);
+
+        $this->assertArrayHasKey('rows', $result);
+        $this->assertArrayHasKey('count', $result);
+        $this->assertArrayHasKey('offset', $result);
+        $this->assertArrayHasKey('total', $result);
+        $this->assertArrayHasKey('filter_sql', $result);
+        $this->assertArrayHasKey('sql', $result);
+        $this->assertArrayHasKey('table_pk', $result);
+        $this->assertArrayHasKey('table_alias', $result);
+        $this->assertEquals(20, $result['count']);
+        $this->assertEquals(0, $result['offset']);
+        $this->assertEquals(1, $result['total']);
+        $this->assertEquals('id', $result['table_pk']);
+        $this->assertEquals('u', $result['table_alias']);
+        $this->assertInternalType('array', $result['rows']);
+
+        $user = $result['rows'][0];
+        $this->assertEquals('Foo', $user->username);
+
+        $this->assertContains('AND (active = 1)', $result['sql']);
     }
 }

@@ -2,6 +2,7 @@
 
 namespace Sympathy\Tests\Db;
 
+use Doctrine\DBAL\Query\QueryBuilder;
 use Sympathy\Db\Entity;
 use Sympathy\Db\Format;
 
@@ -24,4 +25,9 @@ class UserDao extends Entity
         'updated' => Format::DATETIME,
         'created' => Format::DATETIME
     );
+
+    protected function optimizeSearchQuery (QueryBuilder $query, array $params) {
+        $query->andWhere('active = 1');
+        return $query;
+    }
 }
