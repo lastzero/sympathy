@@ -831,15 +831,19 @@ class FormTest extends UnitTestCase
                 'default' => array(
                     'type' => 'bool',
                     'default' => null
+                ),
+                'undefined' => array(
+                    'type' => 'bool'
                 )
             )
         );
 
         $values = array('wahr' => 1, 'falsch' => 0);
         $this->form->setWritableValues($values);
-        $this->assertTrue($this->form->wahr);
-        $this->assertFalse($this->form->falsch);
+        $this->assertTrue($this->form->wahr === true);
+        $this->assertTrue($this->form->falsch === false);
         $this->assertNull($this->form->default);
+        $this->assertNull($this->form->undefined);
 
         $values = array('wahr' => 'yes', 'falsch' => 'no');
         $this->form->setWritableValues($values);

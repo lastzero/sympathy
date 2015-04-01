@@ -98,4 +98,32 @@ class EntityTest extends UnitTestCase
 
         $this->assertContains('AND (active = 1)', $result['sql']);
     }
+
+    public function testSearchCountTotal()
+    {
+        /**
+         * @var \Sympathy\Tests\Db\UserDao
+         */
+        $user = $this->dao->factory('User');
+
+        $params = array('cond' => array(), 'count_total' => false);
+
+        $result = $user->search($params);
+
+        $this->assertArrayHasKey('rows', $result);
+        $this->assertArrayHasKey('count', $result);
+        $this->assertArrayHasKey('offset', $result);
+        $this->assertArrayHasKey('total', $result);
+        $this->assertArrayHasKey('filter_sql', $result);
+        $this->assertArrayHasKey('sql', $result);
+        $this->assertArrayHasKey('table_pk', $result);
+        $this->assertArrayHasKey('table_alias', $result);
+        $this->assertEquals(20, $result['count']);
+        $this->assertEquals(0, $result['offset']);
+        $this->assertEquals(1, $result['total']);
+        $this->assertEquals('id', $result['table_pk']);
+        $this->assertEquals('u', $result['table_alias']);
+        $this->assertInternalType('array', $result['rows']);
+        $this->assertCount(1, $result['rows']);
+    }
 }
