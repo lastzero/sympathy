@@ -43,8 +43,11 @@ class Format
         switch ($format) {
             case self::NONE:
                 return $data;
-            case self::TIME:
             case self::DATE:
+                $result = DateTime::createFromFormat($format, $data);
+                $result->setTime(0, 0, 0);
+                return $result;
+            case self::TIME:
             case self::DATETIME:
             case self::TIMESTAMP:
                 return DateTime::createFromFormat($format, $data);

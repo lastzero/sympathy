@@ -26,6 +26,7 @@ class FormatTest extends UnitTestCase {
         $output = Format::fromSql(Format::DATE, '2010-10-11');
         $this->assertInstanceOf('\DateTime', $output);
         $this->assertEquals('11.10.2010', $output->format('d.m.Y'));
+        $this->assertEquals('00:00:00', $output->format('H:i:s'));
     }
 
     public function testFromSqlUnixTimestamp () {
