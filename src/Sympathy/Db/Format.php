@@ -24,6 +24,7 @@ class Format
     const TIME = 'H:i:s';
     const DATE = 'Y-m-d';
     const DATETIME = 'Y-m-d H:i:s';
+    const DATETIMEU = 'Y-m-d H:i:s.u'; // Support for microseconds (up to six digits)
     const TIMESTAMP = 'U';
 
     /**
@@ -49,6 +50,7 @@ class Format
                 return $result;
             case self::TIME:
             case self::DATETIME:
+            case self::DATETIMEU:
             case self::TIMESTAMP:
                 return DateTime::createFromFormat($format, $data);
             case self::INT:

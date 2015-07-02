@@ -29,6 +29,14 @@ class FormatTest extends UnitTestCase {
         $this->assertEquals('00:00:00', $output->format('H:i:s'));
     }
 
+    public function testFromSqlDatetimeu () {
+        $output = Format::fromSql(Format::DATETIMEU, '2015-07-02 15:23:47.267367');
+        $this->assertInstanceOf('\DateTime', $output);
+        $this->assertEquals('02.07.2015', $output->format('d.m.Y'));
+        $this->assertEquals('15:23:47', $output->format('H:i:s'));
+        $this->assertEquals('267367', $output->format('u'));
+    }
+
     public function testFromSqlUnixTimestamp () {
         $output = Format::fromSql(Format::TIMESTAMP, '1354632469');
         $this->assertInstanceOf('\DateTime', $output);
