@@ -92,6 +92,7 @@ class Format
             case self::TIME:
             case self::DATE:
             case self::DATETIME:
+            case self::DATETIMEU:
             case self::TIMESTAMP:
                 if (empty($data)) {
                     $result = null;
