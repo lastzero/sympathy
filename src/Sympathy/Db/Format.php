@@ -22,6 +22,7 @@ class Format
     const JSON = 'json';
     const BOOL = 'bool';
     const TIME = 'H:i:s';
+    const TIMEU = 'H:i:s.u';
     const DATE = 'Y-m-d';
     const DATETIME = 'Y-m-d H:i:s';
     const DATETIMEU = 'Y-m-d H:i:s.u'; // Support for microseconds (up to six digits)
@@ -48,9 +49,13 @@ class Format
                 $result = DateTime::createFromFormat($format, $data);
                 $result->setTime(0, 0, 0);
                 return $result;
-            case self::TIME:
             case self::TIMESTAMP:
                 return DateTime::createFromFormat($format, $data);
+            case self::TIME:
+            case self::TIMEU:
+                // Includes microseconds?
+                $timeFormat = (strlen($data) > 8) ? self::TIMEU : self::TIME;
+                return DateTime::createFromFormat($timeFormat, $data);
             case self::DATETIME:
             case self::DATETIMEU:
                 // Includes microseconds?
@@ -93,6 +98,7 @@ class Format
             case self::NONE:
                 return $data;
             case self::TIME:
+            case self::TIMEU:
             case self::DATE:
             case self::DATETIME:
             case self::DATETIMEU:
