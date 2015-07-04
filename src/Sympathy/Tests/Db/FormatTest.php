@@ -35,6 +35,12 @@ class FormatTest extends UnitTestCase {
         $this->assertEquals('02.07.2015', $output->format('d.m.Y'));
         $this->assertEquals('15:23:47', $output->format('H:i:s'));
         $this->assertEquals('267367', $output->format('u'));
+
+        $output = Format::fromSql(Format::DATETIMEU, '2015-07-02 15:23:47');
+        $this->assertInstanceOf('\DateTime', $output);
+        $this->assertEquals('02.07.2015', $output->format('d.m.Y'));
+        $this->assertEquals('15:23:47', $output->format('H:i:s'));
+        $this->assertEquals('000000', $output->format('u'));
     }
 
     public function testToSqlDatetimeuFromLocaleFormat () {

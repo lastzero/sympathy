@@ -49,10 +49,13 @@ class Format
                 $result->setTime(0, 0, 0);
                 return $result;
             case self::TIME:
-            case self::DATETIME:
-            case self::DATETIMEU:
             case self::TIMESTAMP:
                 return DateTime::createFromFormat($format, $data);
+            case self::DATETIME:
+            case self::DATETIMEU:
+                // Includes microseconds?
+                $dateTimeFormat = (strlen($data) > 19) ? self::DATETIMEU : self::DATETIME;
+                return DateTime::createFromFormat($dateTimeFormat, $data);
             case self::INT:
                 return (integer)$data;
             case self::BOOL:
