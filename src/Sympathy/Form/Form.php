@@ -645,6 +645,10 @@ class Form
             return $value;
         }
 
+        if (is_array($value)) {
+            return count($value) > 0;
+        }
+
         $value = (string)$value;
 
         switch ($value) {
