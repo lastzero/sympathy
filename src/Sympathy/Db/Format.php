@@ -22,10 +22,14 @@ class Format
     const JSON = 'json';
     const BOOL = 'bool';
     const TIME = 'H:i:s';
-    const TIMEU = 'H:i:s.u';
+    const TIMEU = 'H:i:s.u'; // Support for microseconds (up to six digits)
+    const TIMETZ = 'H:i:sO'; // Support for timezone (e.g. "+0230")
+    const TIMEUTZ = 'H:i:s.uO'; // Support for microseconds & timezone
     const DATE = 'Y-m-d';
     const DATETIME = 'Y-m-d H:i:s';
     const DATETIMEU = 'Y-m-d H:i:s.u'; // Support for microseconds (up to six digits)
+    const DATETIMETZ = 'Y-m-d H:i:sO'; // Support for timezone (e.g. "+0230")
+    const DATETIMEUTZ = 'Y-m-d H:i:s.uO'; // Support for microseconds & timezone
     const TIMESTAMP = 'U';
 
     /**
@@ -50,6 +54,11 @@ class Format
                 $result->setTime(0, 0, 0);
                 return $result;
             case self::TIMESTAMP:
+            case self::TIMETZ:
+            case self::TIMEUTZ:
+            case self::DATETIMETZ:
+            case self::DATETIMEUTZ:
+                // Format must match - no auto detection
                 return DateTime::createFromFormat($format, $data);
             case self::TIME:
             case self::TIMEU:
@@ -99,9 +108,13 @@ class Format
                 return $data;
             case self::TIME:
             case self::TIMEU:
+            case self::TIMETZ:
+            case self::TIMEUTZ:
             case self::DATE:
             case self::DATETIME:
             case self::DATETIMEU:
+            case self::DATETIMETZ:
+            case self::DATETIMEUTZ:
             case self::TIMESTAMP:
                 if (empty($data)) {
                     $result = null;

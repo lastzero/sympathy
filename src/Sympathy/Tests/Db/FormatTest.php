@@ -41,6 +41,10 @@ class FormatTest extends UnitTestCase {
         $output = Format::fromSql(Format::TIMEU, '11:09:21');
         $this->assertInstanceOf('\DateTime', $output);
         $this->assertEquals('11:09:21.000000', $output->format('H:i:s.u'));
+
+        $output = Format::fromSql(Format::TIMEUTZ, '11:09:21.123456+0130');
+        $this->assertInstanceOf('\DateTime', $output);
+        $this->assertEquals('11:09:21.123456+0130', $output->format('H:i:s.uO'));
     }
 
     public function testFromSqlDatetimeu () {
@@ -55,6 +59,22 @@ class FormatTest extends UnitTestCase {
         $this->assertEquals('02.07.2015', $output->format('d.m.Y'));
         $this->assertEquals('15:23:47', $output->format('H:i:s'));
         $this->assertEquals('000000', $output->format('u'));
+    }
+
+    public function testFromSqlDatetimeTimezeone () {
+        $output = Format::fromSql(Format::DATETIMEUTZ, '2015-07-02 15:23:47.267367+02');
+        $this->assertInstanceOf('\DateTime', $output);
+        $this->assertEquals('02.07.2015', $output->format('d.m.Y'));
+        $this->assertEquals('15:23:47', $output->format('H:i:s'));
+        $this->assertEquals('267367', $output->format('u'));
+        $this->assertEquals('+0200', $output->format('O'));
+
+        $output = Format::fromSql(Format::DATETIMETZ, '2015-07-02 15:23:47-0530');
+        $this->assertInstanceOf('\DateTime', $output);
+        $this->assertEquals('02.07.2015', $output->format('d.m.Y'));
+        $this->assertEquals('15:23:47', $output->format('H:i:s'));
+        $this->assertEquals('000000', $output->format('u'));
+        $this->assertEquals('-0530', $output->format('O'));
     }
 
     public function testToSqlDatetimeuFromLocaleFormat () {
