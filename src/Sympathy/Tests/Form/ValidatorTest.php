@@ -26,15 +26,4 @@ class ValidatorTest extends UnitTestCase {
     public function testGetFormException () {
         $this->validator->getForm();
     }
-
-    public function testSetFormException () {
-        $foo = new \stdClass();
-
-        try {
-            $this->validator->setForm($foo);
-            $this->fail('Expected exception');
-        } catch(\Exception $e) {
-            $this->assertInstanceOf('\Exception', $e);
-        }
-    }
 }
