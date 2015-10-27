@@ -24,7 +24,8 @@
     "require-dev": {
         "natxet/CssMin": "dev-master",
         "kriswallsmith/assetic": "~1.1",
-        "phpunit/phpunit": "@stable"
+        "phpunit/phpunit": "@stable",
+        "sstalle/php7cc": "*"
     },
     "autoload": {
         "psr-0": { "Sympathy": "src/" }
