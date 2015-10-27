@@ -27,11 +27,14 @@ class ValidatorTest extends UnitTestCase {
         $this->validator->getForm();
     }
 
-    /**
-     * @expectedException \PHPUnit_Framework_Error
-     */
     public function testSetFormException () {
         $foo = new \stdClass();
-        $this->validator->setForm($foo);
+
+        try {
+            $this->validator->setForm($foo);
+            $this->fail('Expected exception');
+        } catch(\Exception $e) {
+            $this->assertInstanceOf('\Exception', $e);
+        }
     }
 }
