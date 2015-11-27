@@ -9,6 +9,6 @@ Components for the Symfony Ecosystem
 **This library is no longer actively maintained in favor of three separate packages:**
 * [**InputValidation for PHP** – Easy & secure whitelist validation for input data of any origin](https://github.com/lastzero/php-input-validation)
 * [**Doctrine ActiveRecord** - Object-oriented CRUD for Doctrine DBAL](https://github.com/lastzero/doctrine-active-record)
-* [**CSS Optimizer** - Minifies stylesheets by removing duplicates and combining selectors](http://lastzero.github.io/css-optimizer/)
+* [**CSS Optimizer** - Minifies stylesheets by removing duplicates and combining selectors](https://github.com/lastzero/css-optimizer)
 
 You should be able to use those as drop-in replacements. If not, please use the issue tracker to give feedback.
