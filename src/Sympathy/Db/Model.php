@@ -11,7 +11,7 @@ use Doctrine\DBAL\Connection as Db;
  * should reflect the all use cases for the business domain. There are a number of standard
  * use-cases that are pre-implemented in this base class for your convenience.
  *
- * @author Michael Mayer <michael@liquidbytes.net>
+ * @author Michael Mayer <michael@lastzero.net>
  * @package Sympathy
  * @license MIT
  */

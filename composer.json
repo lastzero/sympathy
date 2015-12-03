@@ -8,8 +8,8 @@
     "authors": [
         {
             "name": "Michael Mayer",
-            "email": "michael@liquidbytes.net",
-            "homepage": "http://www.liquidbytes.net/",
+            "email": "michael@lastzero.net",
+            "homepage": "https://lastzero.net/",
             "role": "Developer"
         }
     ],
@@ -28,7 +28,7 @@
         "sstalle/php7cc": "*"
     },
     "autoload": {
-        "psr-0": { "Sympathy": "src/" }
+        "psr-0": { "Sympathy\\": "src/" }
     },
     "config": {
         "bin-dir": "bin/"

@@ -8,7 +8,7 @@ use DateInterval;
 /**
  * Default Validator for Sympathy Forms
  *
- * @author Michael Mayer <michael@liquidbytes.net>
+ * @author Michael Mayer <michael@lastzero.net>
  * @package Sympathy
  * @license MIT
  */

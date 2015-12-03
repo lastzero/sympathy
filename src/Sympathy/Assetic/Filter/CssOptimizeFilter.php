@@ -19,7 +19,7 @@ use Sympathy\Css\Optimizer;
  * $asset->ensureFilter($filter);
  * $outputCss = $asset->dump();
  *
- * @author Michael Mayer <michael@liquidbytes.net>
+ * @author Michael Mayer <michael@lastzero.net>
  * @package Sympathy
  * @license MIT
  */

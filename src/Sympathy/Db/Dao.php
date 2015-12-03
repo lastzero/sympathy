@@ -11,7 +11,7 @@ use Doctrine\DBAL\Query\QueryBuilder;
  * The DAO layer encapsulates the access to a database. You should use one DAO class for each entity.
  * DAOs should not implement business logic, which belongs to the model layer.
  *
- * @author Michael Mayer <michael@liquidbytes.net>
+ * @author Michael Mayer <michael@lastzero.net>
  * @package Sympathy
  * @license MIT
  */

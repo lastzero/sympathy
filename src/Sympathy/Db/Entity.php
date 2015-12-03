@@ -14,7 +14,7 @@ use Doctrine\DBAL\Query\QueryBuilder;
  * you can use the basic \Sympathy\Db\Dao class, while \Sympathy\Db\Entity inherits from this and adds
  * many powerful methods to easily deal with single database tables.
  *
- * @author Michael Mayer <michael@liquidbytes.net>
+ * @author Michael Mayer <michael@lastzero.net>
  * @package Sympathy
  * @license MIT
  */

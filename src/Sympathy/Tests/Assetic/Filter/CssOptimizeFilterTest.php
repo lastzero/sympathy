@@ -8,7 +8,7 @@ use Assetic\Asset\StringAsset;
 use Assetic\FilterManager;
 
 /**
- * @author Michael Mayer <michael@liquidbytes.net>
+ * @author Michael Mayer <michael@lastzero.net>
  * @package Sympathy
  * @license MIT
  */

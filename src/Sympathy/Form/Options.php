@@ -8,7 +8,7 @@ use Symfony\Component\Translation\TranslatorInterface as Translator;
 /**
  * Default options list for Sympathy Forms
  *
- * @author Michael Mayer <michael@liquidbytes.net>
+ * @author Michael Mayer <michael@lastzero.net>
  * @package Sympathy
  * @license MIT
  */

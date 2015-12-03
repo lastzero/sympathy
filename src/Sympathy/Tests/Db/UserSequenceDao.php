@@ -6,7 +6,7 @@ use Sympathy\Db\Entity;
 use Sympathy\Db\Format;
 
 /**
- * @author Michael Mayer <michael@liquidbytes.net>
+ * @author Michael Mayer <michael@lastzero.net>
  * @package Sympathy
  * @license MIT
  */

@@ -7,7 +7,7 @@ use DateTime;
 /**
  * Utility class to convert various data types from and to SQL format
  *
- * @author Michael Mayer <michael@liquidbytes.net>
+ * @author Michael Mayer <michael@lastzero.net>
  * @package Sympathy
  * @license MIT
  */

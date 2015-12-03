@@ -6,7 +6,7 @@ use TestTools\TestCase\UnitTestCase;
 use Sympathy\Form\Options;
 
 /**
- * @author Michael Mayer <michael@liquidbytes.net>
+ * @author Michael Mayer <michael@lastzero.net>
  * @package Sympathy
  * @license MIT
  */
