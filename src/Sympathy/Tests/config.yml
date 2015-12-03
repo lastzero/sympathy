@@ -48,10 +48,10 @@ services:
 
     translator:
         class: \Symfony\Component\Translation\Translator
-        arguments: ['de', @message_selector]
+        arguments: ['de', "@message_selector"]
         calls:
-          - [addLoader, ['yaml', @yaml_loader]]
-          - [addLoader, ['array', @array_loader]]
+          - [addLoader, ['yaml', "@yaml_loader"]]
+          - [addLoader, ['array', "@array_loader"]]
           - [addResource, ['yaml', '%base.path%/Form/Localization/de.yml', 'de']]
           - [addResource, ['yaml', '%base.path%/Form/Localization/en.yml', 'en']]
 
@@ -60,7 +60,7 @@ services:
 
     form:
         class: \Sympathy\Form\Form
-        arguments: [@translator, @validator]
+        arguments: ["@translator", "@validator"]
 
     assetic.css_optimize_filter:
         class: \Sympathy\Assetic\Filter\CssOptimizeFilter
@@ -72,7 +72,7 @@ services:
         class: TestTools\Doctrine\DBAL\Connection
         arguments:
             - %dbal.params%
-            - @dbal.driver
+            - "@dbal.driver"
         calls:
             - [setFixturePrefix, ['sql']]
             - [useFixtures, ["%fixture.path%"]]
@@ -86,18 +86,18 @@ services:
 
     twig:
         class: Twig_Environment
-        arguments: [ @twig.loader, %twig.options% ]
+        arguments: [ "@twig.loader", %twig.options% ]
         calls:
             - [ addGlobal, [ 'debug', %debug% ] ]
 
     router.rest:
         class: Sympathy\Silex\Router\RestRouter
-        arguments: [ @app, @service_container ]
+        arguments: [ "@app", "@service_container" ]
 
     router.twig:
         class: Sympathy\Silex\Router\TwigRouter
-        arguments: [ @app, @service_container, @twig ]
+        arguments: [ "@app", "@service_container", "@twig" ]
 
     router.error:
         class: Sympathy\Silex\Router\ErrorRouter
-        arguments: [ @app, @twig, %exception.codes%, %exception.messages%, %debug% ]
+        arguments: [ "@app", "@twig", %exception.codes%, %exception.messages%, %debug% ]
